@@ -9,7 +9,7 @@ Depends:
     DatabaseConnector (>= 1.2.1)
 Imports:
     Cyclops,
-    MethodEvaluation,
+    MethodEvaluation (>= 1.0.0),
     FeatureExtraction (>= 2.0.0),
     CohortMethod,
     SelfControlledCohort,

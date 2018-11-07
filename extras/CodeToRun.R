@@ -1,6 +1,6 @@
 # @file TestCode.R
 #
-# Copyright 2017 Observational Health Data Sciences and Informatics
+# Copyright 2018 Observational Health Data Sciences and Informatics
 #
 # This file is part of MethodsLibraryPleEvaluation
 #
@@ -18,39 +18,20 @@
 
 library(MethodsLibraryPleEvaluation)
 options('fftempdir' = 'r:/fftemp')
-options(java.parameters = "-Xmx8000m")
 
 
-pw <- NULL
 dbms <- "pdw"
 user <- NULL
-server <- "JRDUSAPSCTL01"
-cdmDatabaseSchema <- "CDM_Truven_MDCD_V610.dbo"
-databaseName <- "MDCD"
-oracleTempSchema <- NULL
-outcomeDatabaseSchema <- "scratch.dbo"
-outcomeTable <- "mschuemi_ohdsi_hois2"
-nestingCohortDatabaseSchema <- "scratch.dbo"
-nestingCohortTable <- "mschuemi_ohdsi_nesting"
-port <- 17001
-cdmVersion <- "5"
-workFolder <- "r:/MethodsLibraryPleEvaluation"
-maxCores <- 32
-
-
 pw <- NULL
-dbms <- "pdw"
-user <- NULL
-server <- "JRDUSAPSCTL01"
-cdmDatabaseSchema <- "CDM_Truven_CCAE_V608.dbo"
+server <- Sys.getenv("PDW_SERVER")
+port <- Sys.getenv("PDW_PORT")
+cdmDatabaseSchema <- "CDM_Truven_CCAE_V778.dbo"
 databaseName <- "CCAE"
 oracleTempSchema <- NULL
 outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_ccae"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_ccae"
-port <- 17001
-cdmVersion <- "5"
 workFolder <- "r:/MethodsLibraryPleEvaluation_ccae"
 maxCores <- 32
 
