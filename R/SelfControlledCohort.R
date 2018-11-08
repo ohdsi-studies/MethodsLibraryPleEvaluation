@@ -36,7 +36,7 @@ runSelfControlledCohort <- function(connectionDetails,
         allControls <- unique(allControls[, c("targetId", "outcomeId")])
         eoList <- list()
         for (i in 1:nrow(allControls)) {
-            eoList[[length(eoList)+1]] <- SelfControlledCohort::createExposureOutcome(exposureId = allControls$targetId[i],
+            eoList[[length(eoList) + 1]] <- SelfControlledCohort::createExposureOutcome(exposureId = allControls$targetId[i],
                                                                                       outcomeId = allControls$outcomeId[i])
         }
         sccAnalysisListFile <- system.file("settings", "sccAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
@@ -53,7 +53,7 @@ runSelfControlledCohort <- function(connectionDetails,
                                                           cdmVersion = cdmVersion,
                                                           outputFolder = sccFolder,
                                                           analysisThreads = min(10, maxCores))
-        sccSummary <- SelfControlledCohort::summarizeAnalyses(sccResult)
+        sccSummary <- SelfControlledCohort::summarizeAnalyses(sccResult, sccFolder)
         saveRDS(sccSummary, sccSummaryFile)
     }
     delta <- Sys.time() - start
@@ -193,7 +193,7 @@ createSelfControlledCohortSettings <- function(fileName) {
                                                             runSelfControlledCohortArgs = runSccArgs8)
 
     sccAnalysisList <- list(sccAnalysis1, sccAnalysis2, sccAnalysis3, sccAnalysis4, sccAnalysis5, sccAnalysis6, sccAnalysis7, sccAnalysis8)
-    if (!missing(fileName) && !is.null(fileName)){
+    if (!missing(fileName) && !is.null(fileName)) {
         SelfControlledCohort::saveSccAnalysisList(sccAnalysisList, fileName)
     }
     invisible(sccAnalysisList)

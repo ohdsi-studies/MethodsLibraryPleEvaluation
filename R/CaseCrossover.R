@@ -24,26 +24,24 @@ runCaseCrossover <- function(connectionDetails,
                              outcomeTable = "cohort",
                              nestingCohortDatabaseSchema = cdmDatabaseSchema,
                              nestingCohortTable = "condition_era",
-                             workFolder,
+                             outputFolder,
                              cdmVersion = "5",
                              maxCores = 4) {
-    if (cdmVersion == '4')
-        stop("The CaseCrossover package does not support CDM version 4")
     start <- Sys.time()
 
-    ccrFolder <- file.path(workFolder, "caseCrossover")
+    ccrFolder <- file.path(outputFolder, "caseCrossover")
     if (!file.exists(ccrFolder))
         dir.create(ccrFolder)
 
-    ccrSummaryFile <- file.path(workFolder, "ccrSummary.rds")
+    ccrSummaryFile <- file.path(outputFolder, "ccrSummary.rds")
     if (!file.exists(ccrSummaryFile)) {
-        allControls <- read.csv(file.path(workFolder , "allControls.csv"))
+        allControls <- read.csv(file.path(outputFolder , "allControls.csv"))
         allControls <- unique(allControls[, c("targetId", "outcomeId", "nestingId")])
         eonList <- list()
         for (i in 1:nrow(allControls)) {
-            eonList[[length(eonList)+1]] <- CaseCrossover::createExposureOutcomeNestingCohort(exposureId = allControls$targetId[i],
-                                                                                            outcomeId = allControls$outcomeId[i],
-                                                                                            nestingCohortId = allControls$nestingId[i])
+            eonList[[length(eonList) + 1]] <- CaseCrossover::createExposureOutcomeNestingCohort(exposureId = allControls$targetId[i],
+                                                                                                outcomeId = allControls$outcomeId[i],
+                                                                                                nestingCohortId = allControls$nestingId[i])
         }
         ccrAnalysisListFile <- system.file("settings", "ccrAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
         ccrAnalysisList <- CaseCrossover::loadCcrAnalysisList(ccrAnalysisListFile)
@@ -62,7 +60,7 @@ runCaseCrossover <- function(connectionDetails,
                                                    selectSubjectsToIncludeThreads = min(5, maxCores),
                                                    getExposureStatusThreads = min(5, maxCores),
                                                    fitCaseCrossoverModelThreads = min(5, maxCores))
-        ccrSummary <- CaseCrossover::summarizeCcrAnalyses(ccrResult)
+        ccrSummary <- CaseCrossover::summarizeCcrAnalyses(ccrResult, ccrFolder)
         saveRDS(ccrSummary, ccrSummaryFile)
     }
     delta <- Sys.time() - start
@@ -74,7 +72,7 @@ createCaseCrossoverSettings <- function(fileName) {
     getDbCaseCrossoverDataArgs1 <- CaseCrossover::createGetDbCaseCrossoverDataArgs(useNestingCohort = FALSE)
 
     selectSubjectsToIncludeArgs1 <- CaseCrossover::createSelectSubjectsToIncludeArgs(firstOutcomeOnly = FALSE,
-                                                                                     washoutPeriod = 180)
+                                                                                     washoutPeriod = 365)
 
     getExposureStatusArgs1 <- CaseCrossover::createGetExposureStatusArgs(firstExposureOnly = FALSE,
                                                                          riskWindowStart = 0,
@@ -101,7 +99,7 @@ createCaseCrossoverSettings <- function(fileName) {
                                                                matchOnGender = TRUE)
 
     selectSubjectsToIncludeArgs2 <- CaseCrossover::createSelectSubjectsToIncludeArgs(firstOutcomeOnly = FALSE,
-                                                                                     washoutPeriod = 180,
+                                                                                     washoutPeriod = 365,
                                                                                      matchingCriteria = matchingCriteria1)
 
     ccrAnalysis3 <- CaseCrossover::createCcrAnalysis(analysisId = 3,
@@ -110,18 +108,9 @@ createCaseCrossoverSettings <- function(fileName) {
                                                      selectSubjectsToIncludeArgs = selectSubjectsToIncludeArgs2,
                                                      getExposureStatusArgs = getExposureStatusArgs1)
 
-    matchingCriteria2 <- CaseCrossover::createMatchingCriteria(matchOnAge = TRUE,
-                                                               ageCaliper = 2,
-                                                               matchOnGender = TRUE,
-                                                               matchOnVisitDate = TRUE)
-
-    selectSubjectsToIncludeArgs3 <- CaseCrossover::createSelectSubjectsToIncludeArgs(firstOutcomeOnly = FALSE,
-                                                                                     washoutPeriod = 180,
-                                                                                     matchingCriteria = matchingCriteria2)
-
     ccrAnalysisList <- list(ccrAnalysis1, ccrAnalysis2, ccrAnalysis3)
 
-    if (!missing(fileName) && !is.null(fileName)){
+    if (!missing(fileName) && !is.null(fileName)) {
         CaseCrossover::saveCcrAnalysisList(ccrAnalysisList, fileName)
     }
     invisible(ccrAnalysisList)

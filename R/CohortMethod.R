@@ -22,18 +22,18 @@ runCohortMethod <- function(connectionDetails,
                             oracleTempSchema = NULL,
                             outcomeDatabaseSchema = cdmDatabaseSchema,
                             outcomeTable = "cohort",
-                            workFolder,
+                            outputFolder,
                             cdmVersion = "5",
                             maxCores = 4) {
     start <- Sys.time()
 
-    cmFolder <- file.path(workFolder, "cohortMethod")
+    cmFolder <- file.path(outputFolder, "cohortMethod")
     if (!file.exists(cmFolder))
         dir.create(cmFolder)
 
-    cmSummaryFile <- file.path(workFolder, "cmSummary.rds")
+    cmSummaryFile <- file.path(outputFolder, "cmSummary.rds")
     if (!file.exists(cmSummaryFile)) {
-        allControls <- read.csv(file.path(workFolder , "allControls.csv"))
+        allControls <- read.csv(file.path(outputFolder , "allControls.csv"))
 
         tcs <- unique(allControls[, c("targetId", "comparatorId")])
         tcosList <- list()
@@ -45,7 +45,7 @@ runCohortMethod <- function(connectionDetails,
                 tcos <- CohortMethod::createDrugComparatorOutcomes(targetId = tcs$targetId[i],
                                                                    comparatorId = tcs$comparatorId[i],
                                                                    outcomeIds = outcomeIds)
-                tcosList[[length(tcosList)+1]] <- tcos
+                tcosList[[length(tcosList) + 1]] <- tcos
             }
         }
         cmAnalysisListFile <- system.file("settings", "cmAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
@@ -59,23 +59,23 @@ runCohortMethod <- function(connectionDetails,
                                                 outputFolder = cmFolder,
                                                 cdmVersion = cdmVersion,
                                                 cmAnalysisList = cmAnalysisList,
-                                                drugComparatorOutcomesList = tcosList,
+                                                targetComparatorOutcomesList = tcosList,
+                                                refitPsForEveryOutcome = FALSE,
+                                                refitPsForEveryStudyPopulation = FALSE,
+                                                compressCohortMethodData = TRUE,
                                                 getDbCohortMethodDataThreads = min(3, maxCores),
                                                 createStudyPopThreads = min(3, maxCores),
                                                 createPsThreads = min(3, maxCores),
                                                 psCvThreads = min(10, floor(maxCores/3)),
-                                                computeCovarBalThreads = min(3, maxCores),
                                                 trimMatchStratifyThreads = min(10, maxCores),
                                                 fitOutcomeModelThreads = min(max(1, floor(maxCores/8)), 4),
-                                                outcomeCvThreads = min(10, maxCores),
-                                                refitPsForEveryOutcome = FALSE)
+                                                outcomeCvThreads = min(10, maxCores))
 
-        cmSummary <- CohortMethod::summarizeAnalyses(cmResult)
-        # write.csv(cmSummary, file.path(workFolder, "cmSummary.csv"), row.names = FALSE)
+        cmSummary <- CohortMethod::summarizeAnalyses(cmResult, cmFolder)
         saveRDS(cmSummary, cmSummaryFile)
     }
     delta <- Sys.time() - start
-    writeLines(paste("Completed CohortMethod analyses in", signif(delta, 3), attr(delta, "units")))
+    ParallelLogger::logInfo(paste("Completed CohortMethod analyses in", signif(delta, 3), attr(delta, "units")))
 }
 
 #' @export
@@ -103,7 +103,7 @@ createCohortMethodSettings <- function(fileName) {
                                                                     stratified = FALSE)
 
     cmAnalysis1 <- CohortMethod::createCmAnalysis(analysisId = 1,
-                                                  description = "No matching, simple outcome model",
+                                                  description = "No PS, simple outcome model",
                                                   getDbCohortMethodDataArgs = getDbCmDataArgs,
                                                   createStudyPopArgs = createStudyPopArgs1,
                                                   fitOutcomeModel = TRUE,
@@ -121,7 +121,7 @@ createCohortMethodSettings <- function(fileName) {
     matchOnPsArgs1 <- CohortMethod::createMatchOnPsArgs(maxRatio = 1)
 
     cmAnalysis2 <- CohortMethod::createCmAnalysis(analysisId = 2,
-                                                  description = "Matching plus simple outcome model",
+                                                  description = "1-on-1 matching, unstratified outcome model",
                                                   getDbCohortMethodDataArgs = getDbCmDataArgs,
                                                   createStudyPopArgs = createStudyPopArgs1,
                                                   createPs = TRUE,
@@ -131,14 +131,28 @@ createCohortMethodSettings <- function(fileName) {
                                                   fitOutcomeModel = TRUE,
                                                   fitOutcomeModelArgs = fitOutcomeModelArgs1)
 
-    stratifyByPsArgs <- CohortMethod::createStratifyByPsArgs(numberOfStrata = 5)
+    matchOnPsArgs2 <- CohortMethod::createMatchOnPsArgs(maxRatio = 100)
 
     fitOutcomeModelArgs2 <- CohortMethod::createFitOutcomeModelArgs(useCovariates = FALSE,
                                                                     modelType = "cox",
                                                                     stratified = TRUE)
 
     cmAnalysis3 <- CohortMethod::createCmAnalysis(analysisId = 3,
-                                                  description = "Stratification plus stratified outcome model",
+                                                  description = "Variable ratio matching, stratified outcome model",
+                                                  getDbCohortMethodDataArgs = getDbCmDataArgs,
+                                                  createStudyPopArgs = createStudyPopArgs1,
+                                                  createPs = TRUE,
+                                                  createPsArgs = createPsArgs,
+                                                  matchOnPs = TRUE,
+                                                  matchOnPsArgs = matchOnPsArgs2,
+                                                  fitOutcomeModel = TRUE,
+                                                  fitOutcomeModelArgs = fitOutcomeModelArgs2)
+
+    stratifyByPsArgs <- CohortMethod::createStratifyByPsArgs(numberOfStrata = 5)
+
+
+    cmAnalysis4 <- CohortMethod::createCmAnalysis(analysisId = 4,
+                                                  description = "Stratification",
                                                   getDbCohortMethodDataArgs = getDbCmDataArgs,
                                                   createStudyPopArgs = createStudyPopArgs1,
                                                   createPs = TRUE,
@@ -148,20 +162,25 @@ createCohortMethodSettings <- function(fileName) {
                                                   fitOutcomeModel = TRUE,
                                                   fitOutcomeModelArgs = fitOutcomeModelArgs2)
 
-    matchOnPsArgs2 <- CohortMethod::createMatchOnPsArgs(maxRatio = 100)
+    trimByPsArgs <- CohortMethod::createTrimByPsArgs(trimFraction = 0.05)
 
-    cmAnalysis4 <- CohortMethod::createCmAnalysis(analysisId = 4,
-                                                  description = "Matching plus stratified outcome model",
+    fitOutcomeModelArgs3 <- CohortMethod::createFitOutcomeModelArgs(useCovariates = FALSE,
+                                                                    modelType = "cox",
+                                                                    stratified = FALSE,
+                                                                    inversePtWeighting = TRUE)
+
+    cmAnalysis5 <- CohortMethod::createCmAnalysis(analysisId = 5,
+                                                  description = "IPTW",
                                                   getDbCohortMethodDataArgs = getDbCmDataArgs,
                                                   createStudyPopArgs = createStudyPopArgs1,
                                                   createPs = TRUE,
                                                   createPsArgs = createPsArgs,
-                                                  matchOnPs = TRUE,
-                                                  matchOnPsArgs = matchOnPsArgs2,
+                                                  trimByPs = TRUE,
+                                                  trimByPsArgs = trimByPsArgs,
                                                   fitOutcomeModel = TRUE,
-                                                  fitOutcomeModelArgs = fitOutcomeModelArgs2)
+                                                  fitOutcomeModelArgs = fitOutcomeModelArgs3)
 
-    fitOutcomeModelArgs3 <- CohortMethod::createFitOutcomeModelArgs(useCovariates = TRUE,
+    fitOutcomeModelArgs4 <- CohortMethod::createFitOutcomeModelArgs(useCovariates = TRUE,
                                                                     modelType = "cox",
                                                                     stratified = TRUE,
                                                                     control = Cyclops::createControl(cvType = "auto",
@@ -171,8 +190,8 @@ createCohortMethodSettings <- function(fileName) {
                                                                                                      tolerance = 2e-07,
                                                                                                      noiseLevel = "quiet"))
 
-    cmAnalysis5 <- CohortMethod::createCmAnalysis(analysisId = 5,
-                                                  description = "Matching plus full outcome model",
+    cmAnalysis6 <- CohortMethod::createCmAnalysis(analysisId = 6,
+                                                  description = "Var ratio matching + full outcome model",
                                                   getDbCohortMethodDataArgs = getDbCmDataArgs,
                                                   createStudyPopArgs = createStudyPopArgs1,
                                                   createPs = TRUE,
@@ -180,10 +199,10 @@ createCohortMethodSettings <- function(fileName) {
                                                   matchOnPs = TRUE,
                                                   matchOnPsArgs = matchOnPsArgs2,
                                                   fitOutcomeModel = TRUE,
-                                                  fitOutcomeModelArgs = fitOutcomeModelArgs3)
+                                                  fitOutcomeModelArgs = fitOutcomeModelArgs4)
 
-    cmAnalysisList <- list(cmAnalysis1, cmAnalysis2, cmAnalysis3, cmAnalysis4, cmAnalysis5)
-    if (!missing(fileName) && !is.null(fileName)){
+    cmAnalysisList <- list(cmAnalysis1, cmAnalysis2, cmAnalysis3, cmAnalysis4, cmAnalysis5, cmAnalysis6)
+    if (!missing(fileName) && !is.null(fileName)) {
         CohortMethod::saveCmAnalysisList(cmAnalysisList, fileName)
     }
     invisible(cmAnalysisList)

@@ -24,24 +24,22 @@ runCaseControl <- function(connectionDetails,
                            outcomeTable = "cohort",
                            nestingCohortDatabaseSchema = cdmDatabaseSchema,
                            nestingCohortTable = "condition_era",
-                           workFolder,
+                           outputFolder,
                            cdmVersion = "5",
                            maxCores = 4) {
-    if (cdmVersion == '4')
-        stop("The CaseControl package does not support CDM version 4")
     start <- Sys.time()
 
-    ccFolder <- file.path(workFolder, "caseControl")
+    ccFolder <- file.path(outputFolder, "caseControl")
     if (!file.exists(ccFolder))
         dir.create(ccFolder)
 
-    ccSummaryFile <- file.path(workFolder, "ccSummary.rds")
+    ccSummaryFile <- file.path(outputFolder, "ccSummary.rds")
     if (!file.exists(ccSummaryFile)) {
-        allControls <- read.csv(file.path(workFolder , "allControls.csv"))
+        allControls <- read.csv(file.path(outputFolder , "allControls.csv"))
         allControls <- unique(allControls[, c("targetId", "outcomeId", "nestingId")])
         eonList <- list()
         for (i in 1:nrow(allControls)) {
-            eonList[[length(eonList)+1]] <- CaseControl::createExposureOutcomeNestingCohort(exposureId = allControls$targetId[i],
+            eonList[[length(eonList) + 1]] <- CaseControl::createExposureOutcomeNestingCohort(exposureId = allControls$targetId[i],
                                                                                             outcomeId = allControls$outcomeId[i],
                                                                                             nestingCohortId = allControls$nestingId[i])
         }
@@ -58,15 +56,16 @@ runCaseControl <- function(connectionDetails,
                                                ccAnalysisList = ccAnalysisList,
                                                exposureOutcomeNestingCohortList = eonList,
                                                outputFolder = ccFolder,
+                                               compressCaseDataFiles = TRUE,
+                                               prefetchExposureData = TRUE,
                                                getDbCaseDataThreads = 1,
                                                selectControlsThreads = min(3, maxCores),
                                                getDbExposureDataThreads = min(3, maxCores),
                                                createCaseControlDataThreads = min(5, maxCores),
                                                fitCaseControlModelThreads = min(5, maxCores),
-                                               cvThreads = min(2,maxCores),
-                                               prefetchExposureData = TRUE)
+                                               cvThreads = min(2,maxCores))
 
-        ccSummary <- CaseControl::summarizeCcAnalyses(ccResult)
+        ccSummary <- CaseControl::summarizeCcAnalyses(ccResult, ccFolder)
         saveRDS(ccSummary, ccSummaryFile)
     }
     delta <- Sys.time() - start
@@ -221,7 +220,7 @@ createCaseControlSettings <- function(fileName) {
     # ccAnalysisList <- list(ccAnalysis1, ccAnalysis3, ccAnalysis4, ccAnalysis5, ccAnalysis6, ccAnalysis7, ccAnalysis8, ccAnalysis9, ccAnalysis10)
     ccAnalysisList <- list(ccAnalysis1, ccAnalysis2, ccAnalysis3, ccAnalysis4)
 
-    if (!missing(fileName) && !is.null(fileName)){
+    if (!missing(fileName) && !is.null(fileName)) {
         CaseControl::saveCcAnalysisList(ccAnalysisList, fileName)
     }
     invisible(ccAnalysisList)

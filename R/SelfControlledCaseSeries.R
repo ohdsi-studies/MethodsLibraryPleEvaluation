@@ -22,20 +22,20 @@ runSelfControlledCaseSeries <- function(connectionDetails,
                                         oracleTempSchema = NULL,
                                         outcomeDatabaseSchema = cdmDatabaseSchema,
                                         outcomeTable = "cohort",
-                                        workFolder,
+                                        outputFolder,
                                         cdmVersion = "5") {
     start <- Sys.time()
-    sccsFolder <- file.path(workFolder, "selfControlledCaseSeries")
+    sccsFolder <- file.path(outputFolder, "selfControlledCaseSeries")
     if (!file.exists(sccsFolder))
         dir.create(sccsFolder)
 
-    sccsSummaryFile <- file.path(workFolder, "sccsSummary.rds")
+    sccsSummaryFile <- file.path(outputFolder, "sccsSummary.rds")
     if (!file.exists(sccsSummaryFile)) {
-        allControls <- read.csv(file.path(workFolder , "allControls.csv"))
+        allControls <- read.csv(file.path(outputFolder , "allControls.csv"))
         allControls <- unique(allControls[, c("targetId", "outcomeId")])
         eoList <- list()
         for (i in 1:nrow(allControls)) {
-            eoList[[length(eoList)+1]] <- SelfControlledCaseSeries::createExposureOutcome(exposureId = allControls$targetId[i],
+            eoList[[length(eoList) + 1]] <- SelfControlledCaseSeries::createExposureOutcome(exposureId = allControls$targetId[i],
                                                                                             outcomeId = allControls$outcomeId[i])
         }
         sccsAnalysisListFile <- system.file("settings", "sccsAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
@@ -51,13 +51,13 @@ runSelfControlledCaseSeries <- function(connectionDetails,
                                                                 cdmVersion = cdmVersion,
                                                                 outputFolder = sccsFolder,
                                                                 combineDataFetchAcrossOutcomes = TRUE,
-                                                                compressSccsEraDataFiles = FALSE,
+                                                                compressSccsEraDataFiles = TRUE,
                                                                 getDbSccsDataThreads = 1,
                                                                 createSccsEraDataThreads = 5,
                                                                 fitSccsModelThreads = 6,
                                                                 cvThreads = 10)
 
-        sccsSummary <- SelfControlledCaseSeries::summarizeSccsAnalyses(sccsResult)
+        sccsSummary <- SelfControlledCaseSeries::summarizeSccsAnalyses(sccsResult, sccsFolder)
         saveRDS(sccsSummary, sccsSummaryFile)
     }
     delta <- Sys.time() - start
@@ -74,15 +74,15 @@ createSccsSettings <- function(fileName) {
                                                                             exposureIds = c(),
                                                                             maxCasesPerOutcome = 250000)
 
-    covarExposureOfInt <- SelfControlledCaseSeries::createCovariateSettings(label = "Exposure of interest",
-                                                                            includeCovariateIds = "exposureId",
-                                                                            start = 0,
-                                                                            end = 0,
-                                                                            addExposedDaysToEnd = TRUE)
+    covarExposureOfInt1 <- SelfControlledCaseSeries::createCovariateSettings(label = "Exposure of interest",
+                                                                             includeCovariateIds = "exposureId",
+                                                                             start = 1,
+                                                                             end = 0,
+                                                                             addExposedDaysToEnd = TRUE)
 
     createSccsEraDataArgs1 <- SelfControlledCaseSeries::createCreateSccsEraDataArgs(naivePeriod = 365,
                                                                                     firstOutcomeOnly = FALSE,
-                                                                                    covariateSettings = covarExposureOfInt)
+                                                                                    covariateSettings = covarExposureOfInt1)
 
     fitSccsModelArgs1 <- SelfControlledCaseSeries::createFitSccsModelArgs()
 
@@ -92,49 +92,65 @@ createSccsSettings <- function(fileName) {
                                                                   createSccsEraDataArgs = createSccsEraDataArgs1,
                                                                   fitSccsModelArgs = fitSccsModelArgs1)
 
+    covarExposureOfInt2 <- SelfControlledCaseSeries::createCovariateSettings(label = "Exposure of interest",
+                                                                             includeCovariateIds = "exposureId",
+                                                                             start = 0,
+                                                                             end = 0,
+                                                                             addExposedDaysToEnd = TRUE)
+
+    createSccsEraDataArgs2 <- SelfControlledCaseSeries::createCreateSccsEraDataArgs(naivePeriod = 365,
+                                                                                    firstOutcomeOnly = FALSE,
+                                                                                    covariateSettings = covarExposureOfInt2)
+
+    sccsAnalysis2 <- SelfControlledCaseSeries::createSccsAnalysis(analysisId = 2,
+                                                                  description = "Including day 0",
+                                                                  getDbSccsDataArgs = getDbSccsDataArgs1,
+                                                                  createSccsEraDataArgs = createSccsEraDataArgs2,
+                                                                  fitSccsModelArgs = fitSccsModelArgs1)
+
     covarPreExposure = SelfControlledCaseSeries::createCovariateSettings(label = "Pre-exposure",
                                                                          includeCovariateIds = "exposureId",
                                                                          start = -60,
                                                                          end = -1,
                                                                          splitPoints = c(-30))
 
-    createSccsEraDataArgs2 <- SelfControlledCaseSeries::createCreateSccsEraDataArgs(naivePeriod = 365,
-                                                                                    firstOutcomeOnly = FALSE,
-                                                                                    covariateSettings = list(covarExposureOfInt,
-                                                                                                             covarPreExposure))
-
-    sccsAnalysis2 <- SelfControlledCaseSeries::createSccsAnalysis(analysisId = 2,
-                                                                  description = "Using pre-exposure window",
-                                                                  getDbSccsDataArgs = getDbSccsDataArgs1,
-                                                                  createSccsEraDataArgs = createSccsEraDataArgs2,
-                                                                  fitSccsModelArgs = fitSccsModelArgs1)
-
-    ageSettings <- SelfControlledCaseSeries::createAgeSettings(includeAge = TRUE, ageKnots = 5)
-
-    seasonalitySettings <- SelfControlledCaseSeries::createSeasonalitySettings(includeSeasonality = TRUE, seasonKnots = 5)
-
     createSccsEraDataArgs3 <- SelfControlledCaseSeries::createCreateSccsEraDataArgs(naivePeriod = 365,
                                                                                     firstOutcomeOnly = FALSE,
-                                                                                    covariateSettings = covarExposureOfInt,
-                                                                                    ageSettings = ageSettings,
-                                                                                    seasonalitySettings = seasonalitySettings,
-                                                                                    minCasesForAgeSeason = 10000)
+                                                                                    covariateSettings = list(covarExposureOfInt1,
+                                                                                                             covarPreExposure))
 
     sccsAnalysis3 <- SelfControlledCaseSeries::createSccsAnalysis(analysisId = 3,
-                                                                  description = "Using age and season",
+                                                                  description = "Using pre-exposure window",
                                                                   getDbSccsDataArgs = getDbSccsDataArgs1,
                                                                   createSccsEraDataArgs = createSccsEraDataArgs3,
                                                                   fitSccsModelArgs = fitSccsModelArgs1)
 
+    ageSettings <- SelfControlledCaseSeries::createAgeSettings(includeAge = TRUE, ageKnots = 5, computeConfidenceIntervals = FALSE)
+
+    seasonalitySettings <- SelfControlledCaseSeries::createSeasonalitySettings(includeSeasonality = TRUE, seasonKnots = 5, computeConfidenceIntervals = FALSE)
+
     createSccsEraDataArgs4 <- SelfControlledCaseSeries::createCreateSccsEraDataArgs(naivePeriod = 365,
                                                                                     firstOutcomeOnly = FALSE,
-                                                                                    covariateSettings = covarExposureOfInt,
-                                                                                    eventDependentObservation = TRUE)
+                                                                                    covariateSettings = covarExposureOfInt1,
+                                                                                    ageSettings = ageSettings,
+                                                                                    seasonalitySettings = seasonalitySettings,
+                                                                                    minCasesForAgeSeason = 10000)
 
     sccsAnalysis4 <- SelfControlledCaseSeries::createSccsAnalysis(analysisId = 4,
-                                                                  description = "Using event-dependent observation",
+                                                                  description = "Using age and season",
                                                                   getDbSccsDataArgs = getDbSccsDataArgs1,
                                                                   createSccsEraDataArgs = createSccsEraDataArgs4,
+                                                                  fitSccsModelArgs = fitSccsModelArgs1)
+
+    createSccsEraDataArgs5 <- SelfControlledCaseSeries::createCreateSccsEraDataArgs(naivePeriod = 365,
+                                                                                    firstOutcomeOnly = FALSE,
+                                                                                    covariateSettings = covarExposureOfInt1,
+                                                                                    eventDependentObservation = TRUE)
+
+    sccsAnalysis5 <- SelfControlledCaseSeries::createSccsAnalysis(analysisId = 5,
+                                                                  description = "Using event-dependent observation",
+                                                                  getDbSccsDataArgs = getDbSccsDataArgs1,
+                                                                  createSccsEraDataArgs = createSccsEraDataArgs5,
                                                                   fitSccsModelArgs = fitSccsModelArgs1)
 
     covarAllDrugs = SelfControlledCaseSeries::createCovariateSettings(label = "All other exposures",
@@ -145,9 +161,9 @@ createSccsSettings <- function(fileName) {
                                                                       addExposedDaysToEnd = TRUE,
                                                                       allowRegularization = TRUE)
 
-    createSccsEraDataArgs5 <- SelfControlledCaseSeries::createCreateSccsEraDataArgs(naivePeriod = 365,
+    createSccsEraDataArgs6 <- SelfControlledCaseSeries::createCreateSccsEraDataArgs(naivePeriod = 365,
                                                                                     firstOutcomeOnly = FALSE,
-                                                                                    covariateSettings = list(covarExposureOfInt,
+                                                                                    covariateSettings = list(covarExposureOfInt1,
                                                                                                              covarAllDrugs))
     prior = Cyclops::createPrior("laplace", useCrossValidation = TRUE)
     control = Cyclops::createControl(cvType = "auto",
@@ -157,15 +173,15 @@ createSccsSettings <- function(fileName) {
                                      tolerance = 2e-07)
     fitSccsModelArgs2 <- SelfControlledCaseSeries::createFitSccsModelArgs(prior = prior, control = control)
 
-    sccsAnalysis5 <- SelfControlledCaseSeries::createSccsAnalysis(analysisId = 5,
+    sccsAnalysis6 <- SelfControlledCaseSeries::createSccsAnalysis(analysisId = 6,
                                                                   description = "Using all other exposures",
                                                                   getDbSccsDataArgs = getDbSccsDataArgs1,
-                                                                  createSccsEraDataArgs = createSccsEraDataArgs5,
+                                                                  createSccsEraDataArgs = createSccsEraDataArgs6,
                                                                   fitSccsModelArgs = fitSccsModelArgs2)
 
-    sccsAnalysisList <- list(sccsAnalysis1, sccsAnalysis2, sccsAnalysis3, sccsAnalysis4, sccsAnalysis5)
+    sccsAnalysisList <- list(sccsAnalysis1, sccsAnalysis2, sccsAnalysis3, sccsAnalysis4, sccsAnalysis5, sccsAnalysis6)
 
-    if (!missing(fileName) && !is.null(fileName)){
+    if (!missing(fileName) && !is.null(fileName)) {
         SelfControlledCaseSeries::saveSccsAnalysisList(sccsAnalysisList, fileName)
     }
     invisible(sccsAnalysisList)

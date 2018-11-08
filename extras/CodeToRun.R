@@ -1,5 +1,3 @@
-# @file TestCode.R
-#
 # Copyright 2018 Observational Health Data Sciences and Informatics
 #
 # This file is part of MethodsLibraryPleEvaluation
@@ -19,7 +17,6 @@
 library(MethodsLibraryPleEvaluation)
 options('fftempdir' = 'r:/fftemp')
 
-
 dbms <- "pdw"
 user <- NULL
 pw <- NULL
@@ -32,8 +29,9 @@ outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_ccae"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_ccae"
-workFolder <- "r:/MethodsLibraryPleEvaluation_ccae"
+outputFolder <- "r:/MethodsLibraryPleEvaluation_ccae"
 maxCores <- 32
+cdmVersion <- "5"
 
 connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
                                                                 server = server,
@@ -41,23 +39,36 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
                                                                 password = pw,
                                                                 port = port)
 
-# MethodEvaluation::createReferenceSetCohorts(connectionDetails = connectionDetails,
-#                                             oracleTempSchema = oracleTempSchema,
-#                                             cdmDatabaseSchema = cdmDatabaseSchema,
-#                                             outcomeDatabaseSchema = outcomeDatabaseSchema,
-#                                             outcomeTable = outcomeTable,
-#                                             nestingDatabaseSchema = nestingCohortDatabaseSchema,
-#                                             nestingTable = nestingCohortTable,
-#                                             referenceSet = "ohdsiNegativeControls")
-#
-# injectSignals(connectionDetails = connectionDetails,
-#               cdmDatabaseSchema = cdmDatabaseSchema,
-#               oracleTempSchema = oracleTempSchema,
-#               outcomeDatabaseSchema = outcomeDatabaseSchema,
-#               outcomeTable = outcomeTable,
-#               workFolder = workFolder,
-#               maxCores = maxCores)
+# Initiate logger, make sure output folder exists --------------------------------------------------------
 
+if (!file.exists(outputFolder)) {
+    dir.create(outputFolder, recursive = TRUE)
+}
+
+ParallelLogger::addDefaultFileLogger(file.path(outputFolder, "log.txt"))
+
+# Create outcome and nesting cohorts for positive and negative controls ----------------------------------
+
+MethodEvaluation::createReferenceSetCohorts(connectionDetails = connectionDetails,
+                                            oracleTempSchema = oracleTempSchema,
+                                            cdmDatabaseSchema = cdmDatabaseSchema,
+                                            outcomeDatabaseSchema = outcomeDatabaseSchema,
+                                            outcomeTable = outcomeTable,
+                                            nestingDatabaseSchema = nestingCohortDatabaseSchema,
+                                            nestingTable = nestingCohortTable,
+                                            referenceSet = "ohdsiMethodsBenchmark")
+
+MethodEvaluation::synthesizePositiveControls(connectionDetails = connectionDetails,
+                                             oracleTempSchema = oracleTempSchema,
+                                             cdmDatabaseSchema = cdmDatabaseSchema,
+                                             outcomeDatabaseSchema = outcomeDatabaseSchema,
+                                             outcomeTable = outcomeTable,
+                                             maxCores = maxCores,
+                                             workFolder = outputFolder,
+                                             summaryFileName = file.path(outputFolder, "allControls.csv"),
+                                             referenceSet = "ohdsiMethodsBenchmark")
+
+# Run methods on negative and positive controls ----------------------------------------------------------
 
 
 runCohortMethod(connectionDetails = connectionDetails,
@@ -65,7 +76,7 @@ runCohortMethod(connectionDetails = connectionDetails,
                 oracleTempSchema = oracleTempSchema,
                 outcomeDatabaseSchema = outcomeDatabaseSchema,
                 outcomeTable = outcomeTable,
-                workFolder = workFolder,
+                outputFolder = outputFolder,
                 cdmVersion = cdmVersion,
                 maxCores = 32)
 
@@ -82,16 +93,8 @@ runSelfControlledCohort(connectionDetails = connectionDetails,
                         oracleTempSchema = oracleTempSchema,
                         outcomeDatabaseSchema = outcomeDatabaseSchema,
                         outcomeTable = outcomeTable,
-                        workFolder = workFolder,
+                        outputFolder = outputFolder,
                         cdmVersion = cdmVersion)
-
-runIctpd(connectionDetails = connectionDetails,
-         cdmDatabaseSchema = cdmDatabaseSchema,
-         oracleTempSchema = oracleTempSchema,
-         outcomeDatabaseSchema = outcomeDatabaseSchema,
-         outcomeTable = outcomeTable,
-         workFolder = workFolder,
-         cdmVersion = cdmVersion)
 
 runCaseControl(connectionDetails = connectionDetails,
                cdmDatabaseSchema = cdmDatabaseSchema,
@@ -100,7 +103,7 @@ runCaseControl(connectionDetails = connectionDetails,
                outcomeTable = outcomeTable,
                nestingCohortDatabaseSchema = nestingCohortDatabaseSchema,
                nestingCohortTable = nestingCohortTable,
-               workFolder = workFolder,
+               outputFolder = outputFolder,
                cdmVersion = cdmVersion,
                maxCores = 20)
 
@@ -111,15 +114,15 @@ runCaseCrossover(connectionDetails = connectionDetails,
                  outcomeTable = outcomeTable,
                  nestingCohortDatabaseSchema = nestingCohortDatabaseSchema,
                  nestingCohortTable = nestingCohortTable,
-                 workFolder = workFolder,
+                 outputFolder = outputFolder,
                  cdmVersion = cdmVersion,
                  maxCores = 20)
 
 packageResults(connectionDetails = connectionDetails,
                cdmDatabaseSchema = cdmDatabaseSchema,
-               workFolder = workFolder)
+               outputFolder = outputFolder)
 
-addCalibration(file.path(workFolder, "export"))
+addCalibration(file.path(outputFolder, "export"))
 
 
 # Merge results from multiple databases
