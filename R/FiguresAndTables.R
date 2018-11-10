@@ -18,7 +18,7 @@
 
 #' @export
 createFiguresAndTables <- function(exportFolder) {
-    # exportFolder <- file.path(workFolder, "export")
+    # exportFolder <- file.path(outputFolder, "export")
     plotFolder <- file.path(exportFolder, "plot")
     if (!file.exists(plotFolder))
         dir.create(plotFolder)
@@ -26,10 +26,13 @@ createFiguresAndTables <- function(exportFolder) {
     estimates <- read.csv(estimatesFile, stringsAsFactors = FALSE)
     analysisRefFile <- file.path(exportFolder, "AnalysisRef.csv")
     analysisRef <-  read.csv(analysisRefFile, stringsAsFactors = FALSE)
-    injectionSummaryFile <- file.path(exportFolder, "InjectionSummary.csv")
-    injectedSignals <-  read.csv(injectionSummaryFile, stringsAsFactors = FALSE)
-    negativeControlFile <- file.path(exportFolder, "negativeControls.csv")
-    negativeControls <- read.csv(negativeControlFile, stringsAsFactors = FALSE)
+    # injectionSummaryFile <- file.path(exportFolder, "InjectionSummary.csv")
+    # injectedSignals <-  read.csv(injectionSummaryFile, stringsAsFactors = FALSE)
+    injectionSummaryFile <- file.path(outputFolder, "InjectionSummary.rds")
+    injectedSignals <-  readRDS(injectionSummaryFile)
+    # negativeControlFile <- file.path(exportFolder, "negativeControls.csv")
+    # negativeControls <- read.csv(negativeControlFile, stringsAsFactors = FALSE)
+    negativeControls <- readRDS(system.file("ohdsiNegativeControls.rds", package = "MethodEvaluation"))
     negativeControls$stratum <- negativeControls$outcomeName
     negativeControls$stratum[negativeControls$type == "Outcome control"] <- negativeControls$targetName[negativeControls$type == "Outcome control"]
     negativeControls$exposureId <- negativeControls$targetId
@@ -144,12 +147,12 @@ createFiguresAndTables <- function(exportFolder) {
 #' @param cdmDatabaseSchema   Schema name where your patient-level data in OMOP CDM format resides.
 #'                            Note that for SQL Server, this should include both the database and
 #'                            schema name, for example 'cdm_data.dbo'.
-#' @param workFolder          Name of local folder to place results; make sure to use forward slashes
+#' @param outputFolder          Name of local folder to place results; make sure to use forward slashes
 #'                            (/)
 #'
 #' @export
-packageResults <- function(connectionDetails, cdmDatabaseSchema, databaseName, workFolder) {
-    exportFolder <- file.path(workFolder, "export")
+packageResults <- function(connectionDetails, cdmDatabaseSchema, databaseName, outputFolder) {
+    exportFolder <- file.path(outputFolder, "export")
     if (!file.exists(exportFolder))
         dir.create(exportFolder)
 
@@ -161,7 +164,7 @@ packageResults <- function(connectionDetails, cdmDatabaseSchema, databaseName, w
                    exportFolder = exportFolder)
 
     ### Create overall results table and analysisRef table ###
-    allControls <- read.csv(file.path(workFolder , "allControls.csv"), stringsAsFactors = FALSE)
+    allControls <- read.csv(file.path(outputFolder , "allControls.csv"), stringsAsFactors = FALSE)
     # Add controls not in database:
     ohdsiNegativeControls <- readRDS(system.file("ohdsiNegativeControls.rds", package = "MethodEvaluation"))
     ohdsiNegativeControls$oldOutcomeId <- ohdsiNegativeControls$outcomeId
@@ -193,7 +196,7 @@ packageResults <- function(connectionDetails, cdmDatabaseSchema, databaseName, w
                                                  description = description,
                                                  json = json))
 
-    sccsSummaryFile <- file.path(workFolder, "sccsSummary.rds")
+    sccsSummaryFile <- file.path(outputFolder, "sccsSummary.rds")
     if (!file.exists(sccsSummaryFile)) {
         stop(paste0("Couldn't find ", sccsSummaryFile, ", please make sure you've successfully completed runSelfControlledCaseSeries"))
     }
@@ -223,7 +226,7 @@ packageResults <- function(connectionDetails, cdmDatabaseSchema, databaseName, w
                                                  description = description,
                                                  json = json))
 
-    cmSummaryFile <- file.path(workFolder, "cmSummary.rds")
+    cmSummaryFile <- file.path(outputFolder, "cmSummary.rds")
     if (!file.exists(cmSummaryFile)) {
         stop(paste0("Couldn't find ", cmSummaryFile, ", please make sure you've successfully completed cohortMethod"))
     }
@@ -249,7 +252,7 @@ packageResults <- function(connectionDetails, cdmDatabaseSchema, databaseName, w
                                                  description = description,
                                                  json = json))
 
-    sccSummaryFile <- file.path(workFolder, "sccSummary.rds")
+    sccSummaryFile <- file.path(outputFolder, "sccSummary.rds")
     if (!file.exists(sccSummaryFile)) {
         stop(paste0("Couldn't find ", sccSummaryFile, ", please make sure you've successfully completed runSelfControlledCohort"))
     }
@@ -279,7 +282,7 @@ packageResults <- function(connectionDetails, cdmDatabaseSchema, databaseName, w
                                                  json = json))
 
 
-    ccSummaryFile <- file.path(workFolder, "ccSummary.rds")
+    ccSummaryFile <- file.path(outputFolder, "ccSummary.rds")
     if (!file.exists(ccSummaryFile)) {
         stop(paste0("Couldn't find ", ccSummaryFile, ", please make sure you've successfully completed runCaseControl"))
     }
@@ -307,7 +310,7 @@ packageResults <- function(connectionDetails, cdmDatabaseSchema, databaseName, w
                                                  description = description,
                                                  json = json))
 
-    ccrSummaryFile <- file.path(workFolder, "ccrSummary.rds")
+    ccrSummaryFile <- file.path(outputFolder, "ccrSummary.rds")
     if (!file.exists(ccrSummaryFile)) {
         stop(paste0("Couldn't find ", ccrSummaryFile, ", please make sure you've successfully completed runSelfControlledCohort"))
     }
@@ -395,7 +398,7 @@ createMetaData <- function(addCdmSource = TRUE,
 
 #' @export
 addCalibration <- function(exportFolder) {
-    # exportFolder <- file.path(workFolder, "export")
+    # exportFolder <- file.path(outputFolder, "export")
     estimates <- read.csv(file.path(exportFolder, "Estimates.csv"))
     combis <- unique(estimates[, c("method", "analysisId", "stratum")])
     calibrate <- function(i , combis, estimates) {

@@ -22,17 +22,17 @@ runSelfControlledCohort <- function(connectionDetails,
                                     oracleTempSchema = NULL,
                                     outcomeDatabaseSchema = cdmDatabaseSchema,
                                     outcomeTable = "cohort",
-                                    workFolder,
+                                    outputFolder,
                                     cdmVersion = "5") {
     start <- Sys.time()
 
-    sccFolder <- file.path(workFolder, "selfControlledCohort")
+    sccFolder <- file.path(outputFolder, "selfControlledCohort")
     if (!file.exists(sccFolder))
         dir.create(sccFolder)
 
-    sccSummaryFile <- file.path(workFolder, "sccSummary.rds")
+    sccSummaryFile <- file.path(outputFolder, "sccSummary.rds")
     if (!file.exists(sccSummaryFile)) {
-        allControls <- read.csv(file.path(workFolder , "allControls.csv"))
+        allControls <- read.csv(file.path(outputFolder , "allControls.csv"))
         allControls <- unique(allControls[, c("targetId", "outcomeId")])
         eoList <- list()
         for (i in 1:nrow(allControls)) {
@@ -57,7 +57,7 @@ runSelfControlledCohort <- function(connectionDetails,
         saveRDS(sccSummary, sccSummaryFile)
     }
     delta <- Sys.time() - start
-    writeLines(paste("Completed SelfControlledCohort analyses in", signif(delta, 3), attr(delta, "units")))
+    ParallelLogger::logInfo("Completed SelfControlledCohort analyses in ", signif(delta, 3), " ", attr(delta, "units"))
 }
 
 #' @export

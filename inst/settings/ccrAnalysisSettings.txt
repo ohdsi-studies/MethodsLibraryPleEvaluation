@@ -13,7 +13,7 @@
     },
     "selectSubjectsToIncludeArgs": {
       "firstOutcomeOnly": false,
-      "washoutPeriod": 180,
+      "washoutPeriod": 365,
       "attr_class": "args"
     },
     "getExposureStatusArgs": {
@@ -39,7 +39,7 @@
     },
     "selectSubjectsToIncludeArgs": {
       "firstOutcomeOnly": false,
-      "washoutPeriod": 180,
+      "washoutPeriod": 365,
       "attr_class": "args"
     },
     "getExposureStatusArgs": {
@@ -65,7 +65,7 @@
     },
     "selectSubjectsToIncludeArgs": {
       "firstOutcomeOnly": false,
-      "washoutPeriod": 180,
+      "washoutPeriod": 365,
       "matchingCriteria": {
         "controlsPerCase": 1,
         "matchOnAge": true,
