@@ -70,29 +70,6 @@
   },
   {
     "analysisId": 4,
-    "description": "30 days of each exposure, index date in exposure window, require full obs",
-    "runSelfControlledCohortArgs": {
-      "firstExposureOnly": false,
-      "firstOutcomeOnly": true,
-      "minAge": "",
-      "maxAge": "",
-      "studyStartDate": "",
-      "studyEndDate": "",
-      "addLengthOfExposureExposed": false,
-      "riskWindowStartExposed": 0,
-      "riskWindowEndExposed": 30,
-      "addLengthOfExposureUnexposed": false,
-      "riskWindowEndUnexposed": -1,
-      "riskWindowStartUnexposed": -30,
-      "hasFullTimeAtRisk": true,
-      "washoutPeriod": 365,
-      "followupPeriod": 183,
-      "attr_class": "args"
-    },
-    "attr_class": "sccAnalysis"
-  },
-  {
-    "analysisId": 5,
     "description": "Length of exposure, index date ignored",
     "runSelfControlledCohortArgs": {
       "firstExposureOnly": false,
@@ -115,7 +92,7 @@
     "attr_class": "sccAnalysis"
   },
   {
-    "analysisId": 6,
+    "analysisId": 5,
     "description": "30 days of each exposure, index date ignored",
     "runSelfControlledCohortArgs": {
       "firstExposureOnly": false,
@@ -138,7 +115,7 @@
     "attr_class": "sccAnalysis"
   },
   {
-    "analysisId": 7,
+    "analysisId": 6,
     "description": "Length of exposure, index date ignored, require full obs",
     "runSelfControlledCohortArgs": {
       "firstExposureOnly": false,
@@ -153,29 +130,6 @@
       "addLengthOfExposureUnexposed": true,
       "riskWindowEndUnexposed": -1,
       "riskWindowStartUnexposed": -1,
-      "hasFullTimeAtRisk": true,
-      "washoutPeriod": 365,
-      "followupPeriod": 183,
-      "attr_class": "args"
-    },
-    "attr_class": "sccAnalysis"
-  },
-  {
-    "analysisId": 8,
-    "description": "30 days of each exposure, index date ignored, require full obs",
-    "runSelfControlledCohortArgs": {
-      "firstExposureOnly": false,
-      "firstOutcomeOnly": true,
-      "minAge": "",
-      "maxAge": "",
-      "studyStartDate": "",
-      "studyEndDate": "",
-      "addLengthOfExposureExposed": false,
-      "riskWindowStartExposed": 1,
-      "riskWindowEndExposed": 30,
-      "addLengthOfExposureUnexposed": false,
-      "riskWindowEndUnexposed": -1,
-      "riskWindowStartUnexposed": -30,
       "hasFullTimeAtRisk": true,
       "washoutPeriod": 365,
       "followupPeriod": 183,

@@ -111,55 +111,55 @@ createSelfControlledCohortSettings <- function(fileName) {
                                                             runSelfControlledCohortArgs = runSccArgs3)
 
 
+    # runSccArgs4 <- SelfControlledCohort::createRunSelfControlledCohortArgs(firstExposureOnly = FALSE,
+    #                                                                        firstOutcomeOnly = TRUE,
+    #                                                                        addLengthOfExposureExposed = FALSE,
+    #                                                                        riskWindowStartExposed = 0,
+    #                                                                        riskWindowEndExposed = 30,
+    #                                                                        hasFullTimeAtRisk = TRUE,
+    #                                                                        riskWindowEndUnexposed = -1,
+    #                                                                        addLengthOfExposureUnexposed = FALSE,
+    #                                                                        riskWindowStartUnexposed = -30,
+    #                                                                        washoutPeriod = 365,
+    #                                                                        followupPeriod = 183)
+    #
+    # sccAnalysis4 <- SelfControlledCohort::createSccAnalysis(analysisId = 4,
+    #                                                         description = "30 days of each exposure, index date in exposure window, require full obs",
+    #                                                         runSelfControlledCohortArgs = runSccArgs4)
+
     runSccArgs4 <- SelfControlledCohort::createRunSelfControlledCohortArgs(firstExposureOnly = FALSE,
                                                                            firstOutcomeOnly = TRUE,
-                                                                           addLengthOfExposureExposed = FALSE,
-                                                                           riskWindowStartExposed = 0,
-                                                                           riskWindowEndExposed = 30,
-                                                                           hasFullTimeAtRisk = TRUE,
+                                                                           addLengthOfExposureExposed = TRUE,
+                                                                           riskWindowStartExposed = 1,
+                                                                           riskWindowEndExposed = 1,
+                                                                           hasFullTimeAtRisk = FALSE,
                                                                            riskWindowEndUnexposed = -1,
-                                                                           addLengthOfExposureUnexposed = FALSE,
-                                                                           riskWindowStartUnexposed = -30,
+                                                                           addLengthOfExposureUnexposed = TRUE,
+                                                                           riskWindowStartUnexposed = -1,
                                                                            washoutPeriod = 365,
                                                                            followupPeriod = 183)
 
     sccAnalysis4 <- SelfControlledCohort::createSccAnalysis(analysisId = 4,
-                                                            description = "30 days of each exposure, index date in exposure window, require full obs",
+                                                            description = "Length of exposure, index date ignored",
                                                             runSelfControlledCohortArgs = runSccArgs4)
 
     runSccArgs5 <- SelfControlledCohort::createRunSelfControlledCohortArgs(firstExposureOnly = FALSE,
                                                                            firstOutcomeOnly = TRUE,
-                                                                           addLengthOfExposureExposed = TRUE,
+                                                                           addLengthOfExposureExposed = FALSE,
                                                                            riskWindowStartExposed = 1,
-                                                                           riskWindowEndExposed = 1,
+                                                                           riskWindowEndExposed = 30,
                                                                            hasFullTimeAtRisk = FALSE,
                                                                            riskWindowEndUnexposed = -1,
-                                                                           addLengthOfExposureUnexposed = TRUE,
-                                                                           riskWindowStartUnexposed = -1,
+                                                                           addLengthOfExposureUnexposed = FALSE,
+                                                                           riskWindowStartUnexposed = -30,
                                                                            washoutPeriod = 365,
                                                                            followupPeriod = 183)
 
     sccAnalysis5 <- SelfControlledCohort::createSccAnalysis(analysisId = 5,
-                                                            description = "Length of exposure, index date ignored",
+                                                            description = "30 days of each exposure, index date ignored",
                                                             runSelfControlledCohortArgs = runSccArgs5)
 
     runSccArgs6 <- SelfControlledCohort::createRunSelfControlledCohortArgs(firstExposureOnly = FALSE,
-                                                                           firstOutcomeOnly = TRUE,
-                                                                           addLengthOfExposureExposed = FALSE,
-                                                                           riskWindowStartExposed = 1,
-                                                                           riskWindowEndExposed = 30,
-                                                                           hasFullTimeAtRisk = FALSE,
-                                                                           riskWindowEndUnexposed = -1,
-                                                                           addLengthOfExposureUnexposed = FALSE,
-                                                                           riskWindowStartUnexposed = -30,
-                                                                           washoutPeriod = 365,
-                                                                           followupPeriod = 183)
-
-    sccAnalysis6 <- SelfControlledCohort::createSccAnalysis(analysisId = 6,
-                                                            description = "30 days of each exposure, index date ignored",
-                                                            runSelfControlledCohortArgs = runSccArgs6)
-
-    runSccArgs7 <- SelfControlledCohort::createRunSelfControlledCohortArgs(firstExposureOnly = FALSE,
                                                                            firstOutcomeOnly = TRUE,
                                                                            addLengthOfExposureExposed = TRUE,
                                                                            riskWindowStartExposed = 1,
@@ -171,28 +171,28 @@ createSelfControlledCohortSettings <- function(fileName) {
                                                                            washoutPeriod = 365,
                                                                            followupPeriod = 183)
 
-    sccAnalysis7 <- SelfControlledCohort::createSccAnalysis(analysisId = 7,
+    sccAnalysis6 <- SelfControlledCohort::createSccAnalysis(analysisId = 6,
                                                             description = "Length of exposure, index date ignored, require full obs",
-                                                            runSelfControlledCohortArgs = runSccArgs7)
+                                                            runSelfControlledCohortArgs = runSccArgs6)
 
 
-    runSccArgs8 <- SelfControlledCohort::createRunSelfControlledCohortArgs(firstExposureOnly = FALSE,
-                                                                           firstOutcomeOnly = TRUE,
-                                                                           addLengthOfExposureExposed = FALSE,
-                                                                           riskWindowStartExposed = 1,
-                                                                           riskWindowEndExposed = 30,
-                                                                           hasFullTimeAtRisk = TRUE,
-                                                                           riskWindowEndUnexposed = -1,
-                                                                           addLengthOfExposureUnexposed = FALSE,
-                                                                           riskWindowStartUnexposed = -30,
-                                                                           washoutPeriod = 365,
-                                                                           followupPeriod = 183)
+    # runSccArgs8 <- SelfControlledCohort::createRunSelfControlledCohortArgs(firstExposureOnly = FALSE,
+    #                                                                        firstOutcomeOnly = TRUE,
+    #                                                                        addLengthOfExposureExposed = FALSE,
+    #                                                                        riskWindowStartExposed = 1,
+    #                                                                        riskWindowEndExposed = 30,
+    #                                                                        hasFullTimeAtRisk = TRUE,
+    #                                                                        riskWindowEndUnexposed = -1,
+    #                                                                        addLengthOfExposureUnexposed = FALSE,
+    #                                                                        riskWindowStartUnexposed = -30,
+    #                                                                        washoutPeriod = 365,
+    #                                                                        followupPeriod = 183)
+    #
+    # sccAnalysis8 <- SelfControlledCohort::createSccAnalysis(analysisId = 8,
+    #                                                         description = "30 days of each exposure, index date ignored, require full obs",
+    #                                                         runSelfControlledCohortArgs = runSccArgs8)
 
-    sccAnalysis8 <- SelfControlledCohort::createSccAnalysis(analysisId = 8,
-                                                            description = "30 days of each exposure, index date ignored, require full obs",
-                                                            runSelfControlledCohortArgs = runSccArgs8)
-
-    sccAnalysisList <- list(sccAnalysis1, sccAnalysis2, sccAnalysis3, sccAnalysis4, sccAnalysis5, sccAnalysis6, sccAnalysis7, sccAnalysis8)
+    sccAnalysisList <- list(sccAnalysis1, sccAnalysis2, sccAnalysis3, sccAnalysis4, sccAnalysis5, sccAnalysis6)
     if (!missing(fileName) && !is.null(fileName)) {
         SelfControlledCohort::saveSccAnalysisList(sccAnalysisList, fileName)
     }
