@@ -76,7 +76,9 @@ runCaseControl <- function(connectionDetails,
 createCaseControlSettings <- function(fileName) {
 
     getDbCaseDataArgs1 <- CaseControl::createGetDbCaseDataArgs(useNestingCohort = FALSE,
-                                                               getVisits = FALSE)
+                                                               getVisits = FALSE,
+                                                               maxNestingCohortSize = 1e7,
+                                                               maxCasesPerOutcome = 500000)
 
     selectControlsArgs1 <- CaseControl::createSelectControlsArgs(firstOutcomeOnly = FALSE,
                                                                  washoutPeriod = 365,
