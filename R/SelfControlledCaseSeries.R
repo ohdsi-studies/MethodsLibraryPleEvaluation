@@ -23,7 +23,8 @@ runSelfControlledCaseSeries <- function(connectionDetails,
                                         outcomeDatabaseSchema = cdmDatabaseSchema,
                                         outcomeTable = "cohort",
                                         outputFolder,
-                                        cdmVersion = "5") {
+                                        cdmVersion = "5",
+                                        maxCores) {
     start <- Sys.time()
     sccsFolder <- file.path(outputFolder, "selfControlledCaseSeries")
     if (!file.exists(sccsFolder))
@@ -52,10 +53,10 @@ runSelfControlledCaseSeries <- function(connectionDetails,
                                                                 outputFolder = sccsFolder,
                                                                 combineDataFetchAcrossOutcomes = TRUE,
                                                                 compressSccsEraDataFiles = TRUE,
-                                                                getDbSccsDataThreads = 1,
-                                                                createSccsEraDataThreads = 5,
-                                                                fitSccsModelThreads = 6,
-                                                                cvThreads = 10)
+                                                                getDbSccsDataThreads = min(3, maxCores),
+                                                                createSccsEraDataThreads = min(5, maxCores),
+                                                                fitSccsModelThreads = min(max(1, floor(maxCores/8)), 4),
+                                                                cvThreads =  min(10, maxCores))
 
         sccsSummary <- SelfControlledCaseSeries::summarizeSccsAnalyses(sccsResult, sccsFolder)
         saveRDS(sccsSummary, sccsSummaryFile)
