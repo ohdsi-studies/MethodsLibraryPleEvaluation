@@ -1,7 +1,7 @@
 [
   {
     "analysisId": 1,
-    "description": "Simple case-crossover",
+    "description": "Simple case-crossover, -30 days",
     "getDbCaseCrossoverDataArgs": {
       "useNestingCohort": false,
       "useObservationEndAsNestingEndDate": true,
@@ -9,6 +9,8 @@
       "studyStartDate": "",
       "studyEndDate": "",
       "getTimeControlData": false,
+      "maxNestingCohortSize": 100000000,
+      "maxCasesPerOutcome": 1000000,
       "attr_class": "args"
     },
     "selectSubjectsToIncludeArgs": {
@@ -27,7 +29,35 @@
   },
   {
     "analysisId": 2,
-    "description": "Nested case-crossover",
+    "description": "Simple case-crossover, -180 days",
+    "getDbCaseCrossoverDataArgs": {
+      "useNestingCohort": false,
+      "useObservationEndAsNestingEndDate": true,
+      "getVisits": false,
+      "studyStartDate": "",
+      "studyEndDate": "",
+      "getTimeControlData": false,
+      "maxNestingCohortSize": 100000000,
+      "maxCasesPerOutcome": 1000000,
+      "attr_class": "args"
+    },
+    "selectSubjectsToIncludeArgs": {
+      "firstOutcomeOnly": false,
+      "washoutPeriod": 365,
+      "attr_class": "args"
+    },
+    "getExposureStatusArgs": {
+      "firstExposureOnly": false,
+      "riskWindowStart": 0,
+      "riskWindowEnd": 0,
+      "controlWindowOffsets": -180,
+      "attr_class": "args"
+    },
+    "attr_class": "ccrAnalysis"
+  },
+  {
+    "analysisId": 3,
+    "description": "Nested case-crossover, -30 days",
     "getDbCaseCrossoverDataArgs": {
       "useNestingCohort": true,
       "useObservationEndAsNestingEndDate": true,
@@ -35,6 +65,8 @@
       "studyStartDate": "",
       "studyEndDate": "",
       "getTimeControlData": true,
+      "maxNestingCohortSize": 100000000,
+      "maxCasesPerOutcome": 1000000,
       "attr_class": "args"
     },
     "selectSubjectsToIncludeArgs": {
@@ -52,8 +84,8 @@
     "attr_class": "ccrAnalysis"
   },
   {
-    "analysisId": 3,
-    "description": "Nested case-time-control, matching on age and gender",
+    "analysisId": 4,
+    "description": "Nested case-crossover, -180 days",
     "getDbCaseCrossoverDataArgs": {
       "useNestingCohort": true,
       "useObservationEndAsNestingEndDate": true,
@@ -61,6 +93,77 @@
       "studyStartDate": "",
       "studyEndDate": "",
       "getTimeControlData": true,
+      "maxNestingCohortSize": 100000000,
+      "maxCasesPerOutcome": 1000000,
+      "attr_class": "args"
+    },
+    "selectSubjectsToIncludeArgs": {
+      "firstOutcomeOnly": false,
+      "washoutPeriod": 365,
+      "attr_class": "args"
+    },
+    "getExposureStatusArgs": {
+      "firstExposureOnly": false,
+      "riskWindowStart": 0,
+      "riskWindowEnd": 0,
+      "controlWindowOffsets": -180,
+      "attr_class": "args"
+    },
+    "attr_class": "ccrAnalysis"
+  },
+  {
+    "analysisId": 5,
+    "description": "Nested case-time-control, -30 days",
+    "getDbCaseCrossoverDataArgs": {
+      "useNestingCohort": true,
+      "useObservationEndAsNestingEndDate": true,
+      "getVisits": false,
+      "studyStartDate": "",
+      "studyEndDate": "",
+      "getTimeControlData": true,
+      "maxNestingCohortSize": 100000000,
+      "maxCasesPerOutcome": 1000000,
+      "attr_class": "args"
+    },
+    "selectSubjectsToIncludeArgs": {
+      "firstOutcomeOnly": false,
+      "washoutPeriod": 365,
+      "matchingCriteria": {
+        "controlsPerCase": 1,
+        "matchOnAge": true,
+        "ageCaliper": 2,
+        "matchOnGender": true,
+        "matchOnProvider": false,
+        "matchOnCareSite": false,
+        "matchOnVisitDate": false,
+        "visitDateCaliper": 30,
+        "matchOnTimeInCohort": false,
+        "daysInCohortCaliper": 30,
+        "attr_class": "matchingCriteria"
+      },
+      "attr_class": "args"
+    },
+    "getExposureStatusArgs": {
+      "firstExposureOnly": false,
+      "riskWindowStart": 0,
+      "riskWindowEnd": 0,
+      "controlWindowOffsets": -30,
+      "attr_class": "args"
+    },
+    "attr_class": "ccrAnalysis"
+  },
+  {
+    "analysisId": 6,
+    "description": "Nested case-time-control, -180 days",
+    "getDbCaseCrossoverDataArgs": {
+      "useNestingCohort": true,
+      "useObservationEndAsNestingEndDate": true,
+      "getVisits": false,
+      "studyStartDate": "",
+      "studyEndDate": "",
+      "getTimeControlData": true,
+      "maxNestingCohortSize": 100000000,
+      "maxCasesPerOutcome": 1000000,
       "attr_class": "args"
     },
     "selectSubjectsToIncludeArgs": {

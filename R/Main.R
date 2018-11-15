@@ -23,6 +23,7 @@ execute <- function(connectionDetails,
                     nestingCohortDatabaseSchema,
                     nestingCohortTable,
                     outputFolder,
+                    databaseName,
                     maxCores = 1,
                     cdmVersion = "5",
                     createNegativeControlCohorts = TRUE,
@@ -31,7 +32,8 @@ execute <- function(connectionDetails,
                     runSelfControlledCaseSeries = TRUE,
                     runSelfControlledCohort = TRUE,
                     runCaseControl = TRUE,
-                    runCaseCrossover = TRUE) {
+                    runCaseCrossover = TRUE,
+                    packageResults = TRUE) {
     if (!file.exists(outputFolder)) {
         dir.create(outputFolder, recursive = TRUE)
     }
@@ -127,5 +129,12 @@ execute <- function(connectionDetails,
                          outputFolder = outputFolder,
                          cdmVersion = cdmVersion,
                          maxCores = 20)
+    }
+
+    if (packageResults) {
+        ParallelLogger::logInfo("Packaging results")
+        packageResults(outputFolder = outputFolder,
+                       exportFolder = file.path(outputFolder, "export"),
+                       databaseName = databaseName)
     }
 }

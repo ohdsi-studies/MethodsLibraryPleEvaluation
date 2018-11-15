@@ -110,6 +110,7 @@
         "selectorType": "auto",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -219,6 +220,7 @@
         "selectorType": "auto",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -272,6 +274,7 @@
         "selectorType": "auto",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -381,6 +384,7 @@
         "selectorType": "auto",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -434,6 +438,7 @@
         "selectorType": "auto",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -543,6 +548,7 @@
         "selectorType": "auto",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -595,6 +601,7 @@
         "selectorType": "auto",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -704,6 +711,7 @@
         "selectorType": "auto",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -755,6 +763,7 @@
         "selectorType": "auto",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -864,6 +873,7 @@
         "selectorType": "auto",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -917,6 +927,7 @@
         "selectorType": "byPid",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"

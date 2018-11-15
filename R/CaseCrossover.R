@@ -56,7 +56,7 @@ runCaseCrossover <- function(connectionDetails,
                                                    ccrAnalysisList = ccrAnalysisList,
                                                    exposureOutcomeNestingCohortList = eonList,
                                                    outputFolder = ccrFolder,
-                                                   getDbCaseCrossoverDataThreads = 1,
+                                                   getDbCaseCrossoverDataThreads = min(3, maxCores),
                                                    selectSubjectsToIncludeThreads = min(5, maxCores),
                                                    getExposureStatusThreads = min(5, maxCores),
                                                    fitCaseCrossoverModelThreads = min(5, maxCores))
@@ -69,7 +69,9 @@ runCaseCrossover <- function(connectionDetails,
 
 #' @export
 createCaseCrossoverSettings <- function(fileName) {
-    getDbCaseCrossoverDataArgs1 <- CaseCrossover::createGetDbCaseCrossoverDataArgs(useNestingCohort = FALSE)
+    getDbCaseCrossoverDataArgs1 <- CaseCrossover::createGetDbCaseCrossoverDataArgs(useNestingCohort = FALSE,
+                                                                                   maxNestingCohortSize = 1e8,
+                                                                                   maxCasesPerOutcome = 1e6)
 
     selectSubjectsToIncludeArgs1 <- CaseCrossover::createSelectSubjectsToIncludeArgs(firstOutcomeOnly = FALSE,
                                                                                      washoutPeriod = 365)
@@ -80,19 +82,38 @@ createCaseCrossoverSettings <- function(fileName) {
                                                                          controlWindowOffsets = -30)
 
     ccrAnalysis1 <- CaseCrossover::createCcrAnalysis(analysisId = 1,
-                                                     description = "Simple case-crossover",
+                                                     description = "Simple case-crossover, -30 days",
                                                      getDbCaseCrossoverDataArgs = getDbCaseCrossoverDataArgs1,
                                                      selectSubjectsToIncludeArgs = selectSubjectsToIncludeArgs1,
                                                      getExposureStatusArgs = getExposureStatusArgs1)
 
-    getDbCaseCrossoverDataArgs2 <- CaseCrossover::createGetDbCaseCrossoverDataArgs(useNestingCohort = TRUE,
-                                                                                   getTimeControlData = TRUE)
+	getExposureStatusArgs2 <- CaseCrossover::createGetExposureStatusArgs(firstExposureOnly = FALSE,
+                                                                         riskWindowStart = 0,
+                                                                         riskWindowEnd = 0,
+                                                                         controlWindowOffsets = -180)
 
     ccrAnalysis2 <- CaseCrossover::createCcrAnalysis(analysisId = 2,
-                                                     description = "Nested case-crossover",
+                                                     description = "Simple case-crossover, -180 days",
+                                                     getDbCaseCrossoverDataArgs = getDbCaseCrossoverDataArgs1,
+                                                     selectSubjectsToIncludeArgs = selectSubjectsToIncludeArgs1,
+                                                     getExposureStatusArgs = getExposureStatusArgs2)
+
+    getDbCaseCrossoverDataArgs2 <- CaseCrossover::createGetDbCaseCrossoverDataArgs(useNestingCohort = TRUE,
+                                                                                   getTimeControlData = TRUE,
+                                                                                   maxNestingCohortSize = 1e8,
+                                                                                   maxCasesPerOutcome = 1e6)
+
+    ccrAnalysis3 <- CaseCrossover::createCcrAnalysis(analysisId = 3,
+                                                     description = "Nested case-crossover, -30 days",
                                                      getDbCaseCrossoverDataArgs = getDbCaseCrossoverDataArgs2,
                                                      selectSubjectsToIncludeArgs = selectSubjectsToIncludeArgs1,
                                                      getExposureStatusArgs = getExposureStatusArgs1)
+
+    ccrAnalysis4 <- CaseCrossover::createCcrAnalysis(analysisId = 4,
+                                                     description = "Nested case-crossover, -180 days",
+                                                     getDbCaseCrossoverDataArgs = getDbCaseCrossoverDataArgs2,
+                                                     selectSubjectsToIncludeArgs = selectSubjectsToIncludeArgs1,
+                                                     getExposureStatusArgs = getExposureStatusArgs2)
 
     matchingCriteria1 <- CaseCrossover::createMatchingCriteria(matchOnAge = TRUE,
                                                                ageCaliper = 2,
@@ -102,13 +123,19 @@ createCaseCrossoverSettings <- function(fileName) {
                                                                                      washoutPeriod = 365,
                                                                                      matchingCriteria = matchingCriteria1)
 
-    ccrAnalysis3 <- CaseCrossover::createCcrAnalysis(analysisId = 3,
-                                                     description = "Nested case-time-control, matching on age and gender",
+    ccrAnalysis5 <- CaseCrossover::createCcrAnalysis(analysisId = 5,
+                                                     description = "Nested case-time-control, -30 days",
                                                      getDbCaseCrossoverDataArgs = getDbCaseCrossoverDataArgs2,
                                                      selectSubjectsToIncludeArgs = selectSubjectsToIncludeArgs2,
                                                      getExposureStatusArgs = getExposureStatusArgs1)
 
-    ccrAnalysisList <- list(ccrAnalysis1, ccrAnalysis2, ccrAnalysis3)
+    ccrAnalysis6 <- CaseCrossover::createCcrAnalysis(analysisId = 6,
+                                                     description = "Nested case-time-control, -180 days",
+                                                     getDbCaseCrossoverDataArgs = getDbCaseCrossoverDataArgs2,
+                                                     selectSubjectsToIncludeArgs = selectSubjectsToIncludeArgs2,
+                                                     getExposureStatusArgs = getExposureStatusArgs1)
+
+    ccrAnalysisList <- list(ccrAnalysis1, ccrAnalysis2, ccrAnalysis3, ccrAnalysis4, ccrAnalysis5, ccrAnalysis6)
 
     if (!missing(fileName) && !is.null(fileName)) {
         CaseCrossover::saveCcrAnalysisList(ccrAnalysisList, fileName)

@@ -22,16 +22,29 @@ user <- NULL
 pw <- NULL
 server <- Sys.getenv("PDW_SERVER")
 port <- Sys.getenv("PDW_PORT")
-cdmDatabaseSchema <- "CDM_Truven_CCAE_V778.dbo"
-databaseName <- "CCAE"
+maxCores <- 32
+cdmVersion <- "5"
 oracleTempSchema <- NULL
+
+# CCAE settings --------------------------------------------------------------------------------
+cdmDatabaseSchema <- "cdm_truven_ccae_v778.dbo"
+databaseName <- "CCAE"
 outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_ccae"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_ccae"
 outputFolder <- "r:/MethodsLibraryPleEvaluation_ccae"
-maxCores <- 32
-cdmVersion <- "5"
+
+
+# Optum Panther settings ----------------------------------------------------------------
+cdmDatabaseSchema <- "cdm_optum_panther_v735.dbo"
+databaseName <- "Panther"
+outcomeDatabaseSchema <- "scratch.dbo"
+outcomeTable <- "mschuemi_ohdsi_hois_panther"
+nestingCohortDatabaseSchema <- "scratch.dbo"
+nestingCohortTable <- "mschuemi_ohdsi_nesting_panther"
+outputFolder <- "r:/MethodsLibraryPleEvaluation_panther"
+
 
 connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
                                                                 server = server,
@@ -39,99 +52,27 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
                                                                 password = pw,
                                                                 port = port)
 
-# Initiate logger, make sure output folder exists --------------------------------------------------------
+execute <- function(connectionDetails = connectionDetails,
+                    cdmDatabaseSchema = cdmDatabaseSchema,
+                    oracleTempSchema = oracleTempSchema,
+                    outcomeDatabaseSchema = outcomeDatabaseSchema,
+                    outcomeTable = outcomeTable,
+                    nestingCohortDatabaseSchema = nestingCohortDatabaseSchema,
+                    nestingCohortTable = nestingCohortTable,
+                    outputFolder = outputFolder,
+                    databaseName = databaseName,
+                    maxCores = maxCores,
+                    cdmVersion = cdmVersion,
+                    createNegativeControlCohorts = TRUE,
+                    synthesizePositiveControls = TRUE,
+                    runCohortMethod = TRUE,
+                    runSelfControlledCaseSeries = TRUE,
+                    runSelfControlledCohort = TRUE,
+                    runCaseControl = TRUE,
+                    runCaseCrossover = TRUE,
+                    packageResults = TRUE)
 
-if (!file.exists(outputFolder)) {
-    dir.create(outputFolder, recursive = TRUE)
-}
-
-ParallelLogger::addDefaultFileLogger(file.path(outputFolder, "log.txt"))
-
-# Create outcome and nesting cohorts for positive and negative controls ----------------------------------
-
-MethodEvaluation::createReferenceSetCohorts(connectionDetails = connectionDetails,
-                                            oracleTempSchema = oracleTempSchema,
-                                            cdmDatabaseSchema = cdmDatabaseSchema,
-                                            outcomeDatabaseSchema = outcomeDatabaseSchema,
-                                            outcomeTable = outcomeTable,
-                                            nestingDatabaseSchema = nestingCohortDatabaseSchema,
-                                            nestingTable = nestingCohortTable,
-                                            referenceSet = "ohdsiMethodsBenchmark")
-
-MethodEvaluation::synthesizePositiveControls(connectionDetails = connectionDetails,
-                                             oracleTempSchema = oracleTempSchema,
-                                             cdmDatabaseSchema = cdmDatabaseSchema,
-                                             outcomeDatabaseSchema = outcomeDatabaseSchema,
-                                             outcomeTable = outcomeTable,
-                                             maxCores = maxCores,
-                                             workFolder = outputFolder,
-                                             summaryFileName = file.path(outputFolder, "allControls.csv"),
-                                             referenceSet = "ohdsiMethodsBenchmark")
-
-# Run methods on negative and positive controls ----------------------------------------------------------
+exportFolder <- file.path(outputFolder, "export")
+MethodEvaluation::launchMethodEvaluationApp(exportFolder)
 
 
-runCohortMethod(connectionDetails = connectionDetails,
-                cdmDatabaseSchema = cdmDatabaseSchema,
-                oracleTempSchema = oracleTempSchema,
-                outcomeDatabaseSchema = outcomeDatabaseSchema,
-                outcomeTable = outcomeTable,
-                outputFolder = outputFolder,
-                cdmVersion = cdmVersion,
-                maxCores = 32)
-
-runSelfControlledCaseSeries(connectionDetails = connectionDetails,
-                            cdmDatabaseSchema = cdmDatabaseSchema,
-                            oracleTempSchema = oracleTempSchema,
-                            outcomeDatabaseSchema = outcomeDatabaseSchema,
-                            outcomeTable = outcomeTable,
-                            workFolder = workFolder,
-                            cdmVersion = cdmVersion)
-
-runSelfControlledCohort(connectionDetails = connectionDetails,
-                        cdmDatabaseSchema = cdmDatabaseSchema,
-                        oracleTempSchema = oracleTempSchema,
-                        outcomeDatabaseSchema = outcomeDatabaseSchema,
-                        outcomeTable = outcomeTable,
-                        outputFolder = outputFolder,
-                        cdmVersion = cdmVersion)
-
-runCaseControl(connectionDetails = connectionDetails,
-               cdmDatabaseSchema = cdmDatabaseSchema,
-               oracleTempSchema = oracleTempSchema,
-               outcomeDatabaseSchema = outcomeDatabaseSchema,
-               outcomeTable = outcomeTable,
-               nestingCohortDatabaseSchema = nestingCohortDatabaseSchema,
-               nestingCohortTable = nestingCohortTable,
-               outputFolder = outputFolder,
-               cdmVersion = cdmVersion,
-               maxCores = 20)
-
-runCaseCrossover(connectionDetails = connectionDetails,
-                 cdmDatabaseSchema = cdmDatabaseSchema,
-                 oracleTempSchema = oracleTempSchema,
-                 outcomeDatabaseSchema = outcomeDatabaseSchema,
-                 outcomeTable = outcomeTable,
-                 nestingCohortDatabaseSchema = nestingCohortDatabaseSchema,
-                 nestingCohortTable = nestingCohortTable,
-                 outputFolder = outputFolder,
-                 cdmVersion = cdmVersion,
-                 maxCores = 20)
-
-packageResults(connectionDetails = connectionDetails,
-               cdmDatabaseSchema = cdmDatabaseSchema,
-               outputFolder = outputFolder)
-
-addCalibration(file.path(outputFolder, "export"))
-
-
-# Merge results from multiple databases
-
-folders <- c("s:/MethodsLibraryPleEvaluation", "r:/MethodsLibraryPleEvaluation_ccae")
-calibrated <- data.frame()
-for (folder in folders) {
-  temp <- read.csv(file.path(folder, "export", "calibrated.csv"), stringsAsFactors = FALSE)
-  calibrated <- rbind(calibrated, temp)
-}
-head(calibrated)
-write.csv(calibrated, "r:/calibrated.csv", row.names = FALSE)

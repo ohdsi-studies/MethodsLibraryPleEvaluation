@@ -42,9 +42,9 @@ runCohortMethod <- function(connectionDetails,
                                                     allControls$comparatorId == tcs$comparatorId[i] &
                                                     !is.na(allControls$mdrrComparator)]
             if (length(outcomeIds) != 0) {
-                tcos <- CohortMethod::createDrugComparatorOutcomes(targetId = tcs$targetId[i],
-                                                                   comparatorId = tcs$comparatorId[i],
-                                                                   outcomeIds = outcomeIds)
+                tcos <- CohortMethod::createTargetComparatorOutcomes(targetId = tcs$targetId[i],
+                                                                     comparatorId = tcs$comparatorId[i],
+                                                                     outcomeIds = outcomeIds)
                 tcosList[[length(tcosList) + 1]] <- tcos
             }
         }
