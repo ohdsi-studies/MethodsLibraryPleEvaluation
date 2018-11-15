@@ -188,7 +188,7 @@
       "firstExposureOnly": false,
       "riskWindowStart": 0,
       "riskWindowEnd": 0,
-      "controlWindowOffsets": -30,
+      "controlWindowOffsets": -180,
       "attr_class": "args"
     },
     "attr_class": "ccrAnalysis"

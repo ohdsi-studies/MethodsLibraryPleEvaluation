@@ -133,7 +133,7 @@ createCaseCrossoverSettings <- function(fileName) {
                                                      description = "Nested case-time-control, -180 days",
                                                      getDbCaseCrossoverDataArgs = getDbCaseCrossoverDataArgs2,
                                                      selectSubjectsToIncludeArgs = selectSubjectsToIncludeArgs2,
-                                                     getExposureStatusArgs = getExposureStatusArgs1)
+                                                     getExposureStatusArgs = getExposureStatusArgs2)
 
     ccrAnalysisList <- list(ccrAnalysis1, ccrAnalysis2, ccrAnalysis3, ccrAnalysis4, ccrAnalysis5, ccrAnalysis6)
 

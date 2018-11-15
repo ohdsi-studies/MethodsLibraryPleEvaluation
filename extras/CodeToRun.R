@@ -37,7 +37,7 @@ outputFolder <- "r:/MethodsLibraryPleEvaluation_ccae"
 
 
 # Optum Panther settings ----------------------------------------------------------------
-cdmDatabaseSchema <- "cdm_optum_panther_v735.dbo"
+cdmDatabaseSchema <- "cdm_optum_panther_v776.dbo"
 databaseName <- "Panther"
 outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_panther"
