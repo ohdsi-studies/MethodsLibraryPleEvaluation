@@ -25,6 +25,11 @@ port <- Sys.getenv("PDW_PORT")
 maxCores <- 32
 cdmVersion <- "5"
 oracleTempSchema <- NULL
+connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
+                                                                server = server,
+                                                                user = user,
+                                                                password = pw,
+                                                                port = port)
 
 # CCAE settings --------------------------------------------------------------------------------
 cdmDatabaseSchema <- "cdm_truven_ccae_v778.dbo"
@@ -34,23 +39,22 @@ outcomeTable <- "mschuemi_ohdsi_hois_ccae"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_ccae"
 outputFolder <- "r:/MethodsLibraryPleEvaluation_ccae"
+exposureDatabaseSchema <- cdmDatabaseSchema
+exposureTable = "drug_era"
 
 
 # Optum Panther settings ----------------------------------------------------------------
 cdmDatabaseSchema <- "cdm_optum_panther_v776.dbo"
-databaseName <- "Panther"
+databaseName <- "PanTher"
 outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_panther"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_panther"
 outputFolder <- "r:/MethodsLibraryPleEvaluation_panther"
+exposureDatabaseSchema <- "scratch.dbo"
+exposureTable = "mschuemi_ohdsi_exposure_panther"
 
 
-connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
-                                                                server = server,
-                                                                user = user,
-                                                                password = pw,
-                                                                port = port)
 
 execute <- function(connectionDetails = connectionDetails,
                     cdmDatabaseSchema = cdmDatabaseSchema,

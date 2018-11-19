@@ -20,6 +20,8 @@ execute <- function(connectionDetails,
                     oracleTempSchema = NULL,
                     outcomeDatabaseSchema,
                     outcomeTable,
+                    exposureDatabaseSchema,
+                    exposureTable,
                     nestingCohortDatabaseSchema,
                     nestingCohortTable,
                     outputFolder,
@@ -27,6 +29,7 @@ execute <- function(connectionDetails,
                     maxCores = 1,
                     cdmVersion = "5",
                     createNegativeControlCohorts = TRUE,
+                    imputeExposureLengthForPanther = TRUE,
                     synthesizePositiveControls = TRUE,
                     runCohortMethod = TRUE,
                     runSelfControlledCaseSeries = TRUE,
@@ -54,6 +57,16 @@ execute <- function(connectionDetails,
                                                     referenceSet = "ohdsiMethodsBenchmark")
     }
 
+    if (imputeExposureLengthForPanther && tolower(databaseName) ==  "panther") {
+        ParallelLogger::logInfo("Imputing exposure lengths for PanTher database")
+        imputeExposureLengthForPanther(connectionDetails = connectionDetails,
+                                       oracleTempSchema = oracleTempSchema,
+                                       cdmDatabaseSchema = cdmDatabaseSchema,
+                                       exposureDatabaseSchema = exposureDatabaseSchema,
+                                       exposureTable = exposureTable)
+    }
+
+
     if (synthesizePositiveControls) {
         ParallelLogger::logInfo("Synthesizing positive controls")
         MethodEvaluation::synthesizePositiveControls(connectionDetails = connectionDetails,
@@ -61,6 +74,8 @@ execute <- function(connectionDetails,
                                                      cdmDatabaseSchema = cdmDatabaseSchema,
                                                      outcomeDatabaseSchema = outcomeDatabaseSchema,
                                                      outcomeTable = outcomeTable,
+                                                     exposureDatabaseSchema = exposureDatabaseSchema,
+                                                     exposureTable = exposureTable,
                                                      maxCores = maxCores,
                                                      workFolder = outputFolder,
                                                      summaryFileName = file.path(outputFolder, "allControls.csv"),

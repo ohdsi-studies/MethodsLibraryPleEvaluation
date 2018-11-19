@@ -153,5 +153,37 @@ packageResults <- function(outputFolder,
                                                    databaseName = databaseName,
                                                    exportFolder = exportFolder)
 
+
+    # SelfControlledCaseSeries -----------------------------------------------------------------------------------------------
+    estimates <- readRDS(file.path(outputFolder, "sccsSummary.rds"))
+
+    estimates <- data.frame(analysisId = estimates$analysisId,
+                            targetId = estimates$exposureId,
+                            outcomeId = estimates$outcomeId,
+                            logRr = estimates$`logRr(Exposure of interest)`,
+                            seLogRr = estimates$`seLogRr(Exposure of interest)`,
+                            ci95Lb = estimates$`ci95lb(Exposure of interest)`,
+                            ci95Ub = estimates$`ci95ub(Exposure of interest)`)
+
+    sccsAnalysisListFile <- system.file("settings", "sccsAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
+    sccsAnalysisList <- SelfControlledCaseSeries::loadSccsAnalysisList(sccsAnalysisListFile)
+    analysisId <- unlist(ParallelLogger::selectFromList(sccsAnalysisList, "analysisId"))
+    description <- unlist(ParallelLogger::selectFromList(sccsAnalysisList, "description"))
+    details <- sapply(sccsAnalysisList, ParallelLogger::convertSettingsToJson)
+    analysisRef <- data.frame(method = "SelfControlledCaseSeries",
+                              analysisId = analysisId,
+                              description = description,
+                              details = details,
+                              comparative = FALSE,
+                              nesting = FALSE,
+                              firstExposureOnly = FALSE)
+
+    MethodEvaluation::packageOhdsiBenchmarkResults(estimates = estimates,
+                                                   controlSummary = controlSummary,
+                                                   analysisRef = analysisRef,
+                                                   databaseName = databaseName,
+                                                   exportFolder = exportFolder)
+
+
 }
 
