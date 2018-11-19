@@ -8,8 +8,8 @@
       "getVisits": false,
       "studyStartDate": "",
       "studyEndDate": "",
-      "maxNestingCohortSize": 10000000,
-      "maxCasesPerOutcome": 500000,
+      "maxNestingCohortSize": 100000000,
+      "maxCasesPerOutcome": 1000000,
       "attr_class": "args"
     },
     "selectControlsArgs": {
@@ -85,8 +85,8 @@
       "getVisits": false,
       "studyStartDate": "",
       "studyEndDate": "",
-      "maxNestingCohortSize": 10000000,
-      "maxCasesPerOutcome": 500000,
+      "maxNestingCohortSize": 100000000,
+      "maxCasesPerOutcome": 1000000,
       "attr_class": "args"
     },
     "selectControlsArgs": {
@@ -162,8 +162,8 @@
       "getVisits": false,
       "studyStartDate": "",
       "studyEndDate": "",
-      "maxNestingCohortSize": 10000000,
-      "maxCasesPerOutcome": 500000,
+      "maxNestingCohortSize": 100000000,
+      "maxCasesPerOutcome": 1000000,
       "attr_class": "args"
     },
     "selectControlsArgs": {
@@ -239,8 +239,8 @@
       "getVisits": false,
       "studyStartDate": "",
       "studyEndDate": "",
-      "maxNestingCohortSize": 10000000,
-      "maxCasesPerOutcome": 500000,
+      "maxNestingCohortSize": 100000000,
+      "maxCasesPerOutcome": 1000000,
       "attr_class": "args"
     },
     "selectControlsArgs": {

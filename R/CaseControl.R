@@ -58,7 +58,7 @@ runCaseControl <- function(connectionDetails,
                                                outputFolder = ccFolder,
                                                compressCaseDataFiles = TRUE,
                                                prefetchExposureData = TRUE,
-                                               getDbCaseDataThreads = 1,
+                                               getDbCaseDataThreads = min(3, maxCores),
                                                selectControlsThreads = min(3, maxCores),
                                                getDbExposureDataThreads = min(3, maxCores),
                                                createCaseControlDataThreads = min(5, maxCores),
@@ -77,8 +77,8 @@ createCaseControlSettings <- function(fileName) {
 
     getDbCaseDataArgs1 <- CaseControl::createGetDbCaseDataArgs(useNestingCohort = FALSE,
                                                                getVisits = FALSE,
-                                                               maxNestingCohortSize = 1e7,
-                                                               maxCasesPerOutcome = 500000)
+                                                               maxNestingCohortSize = 1e8,
+                                                               maxCasesPerOutcome = 1e6)
 
     selectControlsArgs1 <- CaseControl::createSelectControlsArgs(firstOutcomeOnly = FALSE,
                                                                  washoutPeriod = 365,
@@ -123,7 +123,9 @@ createCaseControlSettings <- function(fileName) {
                                                  fitCaseControlModelArgs = fitCaseControlModelArgs1)
 
     getDbCaseDataArgs2 <- CaseControl::createGetDbCaseDataArgs(useNestingCohort = TRUE,
-                                                               getVisits = FALSE)
+                                                               getVisits = FALSE,
+                                                               maxNestingCohortSize = 1e8,
+                                                               maxCasesPerOutcome = 1e6)
 
     # covariateSettings <- FeatureExtraction::createCovariateSettings(useCovariateRiskScores = TRUE,
     #                                                                 useCovariateRiskScoresCharlson = TRUE,
