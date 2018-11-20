@@ -15,7 +15,7 @@
 # limitations under the License.
 
 library(MethodsLibraryPleEvaluation)
-options('fftempdir' = 'r:/fftemp')
+options('fftempdir' = 'c:/fftemp')
 
 dbms <- "pdw"
 user <- NULL
@@ -38,7 +38,7 @@ outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_ccae"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_ccae"
-outputFolder <- "r:/MethodsLibraryPleEvaluation_ccae"
+outputFolder <- "c:/MethodsLibraryPleEvaluation_ccae"
 exposureDatabaseSchema <- cdmDatabaseSchema
 exposureTable = "drug_era"
 

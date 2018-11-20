@@ -32,18 +32,55 @@ createFiguresAndTables <- function(exportFolder) {
     # d <- tidyr::spread(d, to, calLogRr)
     row.names(d) <- d$analysis
     d$analysis <- NULL
-    x <- cor(t(d), use = "na.or.complete")
-    x[is.nan(x)] <- 0
-    # tidyr::gather(x)
+    corrMat <- cor(t(d), use = "na.or.complete")
+    corrMat[is.nan(corrMat)] <- 0
 
-    xm <- reshape2::melt(x)
-    library(ggplot2)
-    ggplot2::ggplot(data = xm, ggplot2::aes(x = Var1, y = Var2, fill = value)) +
+    # corrMatMelt <- reshape2::melt(corrMat) # A lot easier with reshape2. Here's using tidyr:
+    corrMatMelt <- tidyr::gather(dplyr::mutate(as.data.frame(corrMat),
+                                               Var1 = factor(row.names(corrMat),
+                                                             levels = row.names(corrMat))),
+                                 key = Var2,
+                                 value = value,
+                                 -Var1,
+                                 na.rm = TRUE,
+                                 factor_key = TRUE)
+
+
+    labels <- unique(estimates[, c("analysis", "method", "analysisId")])
+    files <- list.files(exportFolder, "analysisRef.*csv", full.names = TRUE)
+    analysisRef <- lapply(files, read.csv)
+    analysisRef <- do.call("rbind", analysisRef)
+    labels <- merge(labels, analysisRef[, c( "method", "analysisId", "description")])
+    labels$methodOrder[labels$method == "CohortMethod"] <- 1
+    labels$methodOrder[labels$method == "SelfControlledCohort"] <- 2
+    labels$methodOrder[labels$method == "CaseControl"] <- 3
+    labels$methodOrder[labels$method == "CaseCrossover"] <- 4
+    labels$methodOrder[labels$method == "SelfControlledCaseSeries"] <- 5
+
+    labels$shortForm[labels$method == "CohortMethod"] <- "CM"
+    labels$shortForm[labels$method == "SelfControlledCohort"] <- "SCC"
+    labels$shortForm[labels$method == "CaseControl"] <- "CC"
+    labels$shortForm[labels$method == "CaseCrossover"] <- "CCR"
+    labels$shortForm[labels$method == "SelfControlledCaseSeries"] <- "SCCS"
+    labels$shortForm <- paste(labels$shortForm, labels$analysisId, sep = "-")
+    labels$longForm <- sprintf("%s (%s)", labels$description, labels$shortForm)
+    labels$displayOrder <- order(labels$methodOrder, labels$analysisId)
+    labels <- labels[order(labels$methodOrder, labels$analysisId), ]
+    corrMatMelt <- merge(corrMatMelt, data.frame(Var1 = labels$analysis,
+                                                 longForm = labels$longForm))
+    corrMatMelt <- merge(corrMatMelt, data.frame(Var2 = labels$analysis,
+                                                 shortForm = labels$shortForm))
+    corrMatMelt$longForm <- factor(corrMatMelt$longForm, levels = rev(labels$longForm))
+    corrMatMelt$shortForm <- factor(corrMatMelt$shortForm, levels = labels$shortForm)
+    plot <- ggplot2::ggplot(data = corrMatMelt, ggplot2::aes(x = shortForm, y = longForm, fill = value)) +
         ggplot2::geom_tile() +
-        # ggplot2::scale_fill_gradientn(colours = c(rgb(0.8, 0, 0), rgb(1,1,1), rgb(0, 0, 0.8)), values = c(-1, 0, 1)) +
         ggplot2::scale_fill_gradient2() +
-        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90),
+        ggplot2::labs(fill = "Pearson\ncorrelation") +
+        ggplot2::scale_x_discrete(position = "top") +
+        ggplot2::theme(axis.text.x.top = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 0),
                        axis.title = ggplot2::element_blank(),
-                       plot.background = ggplot2::element_blank())
-    ggplot2::ggsave(filename = file.path(outputFolder, "correlation.png"), width = 8, height = 5, dpi = 300)
+                       plot.background = ggplot2::element_blank(),
+                       panel.background = ggplot2::element_blank(),
+                       legend.text = ggplot2::element_text())
+    ggplot2::ggsave(filename = file.path(outputFolder, "correlation.png"), plot = plot, width = 8, height = 5, dpi = 400)
 }

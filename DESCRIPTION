@@ -18,7 +18,9 @@ Imports:
     CaseControl,
     CaseCrossover (>= 0.1.0),
     EmpiricalCalibration,
-    OhdsiSharing
+    OhdsiSharing,
+    dplyr,
+    tidyr
 Suggests:
     testthat
 License: Apache License 2.0
