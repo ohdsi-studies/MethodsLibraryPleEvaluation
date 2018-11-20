@@ -78,7 +78,7 @@ createSelfControlledCohortSettings <- function(fileName) {
                                                                            followupPeriod = 183)
 
     sccAnalysis1 <- SelfControlledCohort::createSccAnalysis(analysisId = 1,
-                                                            description = "Length of exposure, index date in exposure window",
+                                                            description = "Time exposed, inc. exp. start date",
                                                             runSelfControlledCohortArgs = runSccArgs1)
 
     runSccArgs2 <- SelfControlledCohort::createRunSelfControlledCohortArgs(firstExposureOnly = FALSE,
@@ -94,7 +94,7 @@ createSelfControlledCohortSettings <- function(fileName) {
                                                                            followupPeriod = 183)
 
     sccAnalysis2 <- SelfControlledCohort::createSccAnalysis(analysisId = 2,
-                                                            description = "30 days of each exposure, index date in exposure window",
+                                                            description = "30 days, incl. exp. start date",
                                                             runSelfControlledCohortArgs = runSccArgs2)
 
     runSccArgs3 <- SelfControlledCohort::createRunSelfControlledCohortArgs(firstExposureOnly = FALSE,
@@ -110,7 +110,7 @@ createSelfControlledCohortSettings <- function(fileName) {
                                                                            followupPeriod = 183)
 
     sccAnalysis3 <- SelfControlledCohort::createSccAnalysis(analysisId = 3,
-                                                            description = "Length of exposure, index date in exposure window, require full obs",
+                                                            description = "Time exposed, inc. exp. start date, require full obs.",
                                                             runSelfControlledCohortArgs = runSccArgs3)
 
 
@@ -143,7 +143,7 @@ createSelfControlledCohortSettings <- function(fileName) {
                                                                            followupPeriod = 183)
 
     sccAnalysis4 <- SelfControlledCohort::createSccAnalysis(analysisId = 4,
-                                                            description = "Length of exposure, index date ignored",
+                                                            description = "Time exposed, ex. exp. start date",
                                                             runSelfControlledCohortArgs = runSccArgs4)
 
     runSccArgs5 <- SelfControlledCohort::createRunSelfControlledCohortArgs(firstExposureOnly = FALSE,
@@ -159,7 +159,7 @@ createSelfControlledCohortSettings <- function(fileName) {
                                                                            followupPeriod = 183)
 
     sccAnalysis5 <- SelfControlledCohort::createSccAnalysis(analysisId = 5,
-                                                            description = "30 days of each exposure, index date ignored",
+                                                            description = "30 days, ex. exp. start date",
                                                             runSelfControlledCohortArgs = runSccArgs5)
 
     runSccArgs6 <- SelfControlledCohort::createRunSelfControlledCohortArgs(firstExposureOnly = FALSE,
@@ -175,7 +175,7 @@ createSelfControlledCohortSettings <- function(fileName) {
                                                                            followupPeriod = 183)
 
     sccAnalysis6 <- SelfControlledCohort::createSccAnalysis(analysisId = 6,
-                                                            description = "Length of exposure, index date ignored, require full obs",
+                                                            description = "Time exposed, ex. exp. start date, require full obs.",
                                                             runSelfControlledCohortArgs = runSccArgs6)
 
 
