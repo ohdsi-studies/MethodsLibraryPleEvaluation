@@ -1,7 +1,7 @@
 [
   {
     "analysisId": 1,
-    "description": "Matching on age and gender, 2 controls per case",
+    "description": "2 controls per case",
     "getDbCaseDataArgs": {
       "useNestingCohort": false,
       "useObservationEndAsNestingEndDate": true,
@@ -70,6 +70,7 @@
         "selectorType": "byPid",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -78,7 +79,7 @@
   },
   {
     "analysisId": 2,
-    "description": "Matching on age and gender, 10 controls per case",
+    "description": "10 controls per case",
     "getDbCaseDataArgs": {
       "useNestingCohort": false,
       "useObservationEndAsNestingEndDate": true,
@@ -147,6 +148,7 @@
         "selectorType": "byPid",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -155,7 +157,7 @@
   },
   {
     "analysisId": 3,
-    "description": "Matching on age and gender, nesting in indication, 2 controls per case",
+    "description": "Nesting in indication, 2 controls per case",
     "getDbCaseDataArgs": {
       "useNestingCohort": true,
       "useObservationEndAsNestingEndDate": true,
@@ -224,6 +226,7 @@
         "selectorType": "byPid",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"
@@ -232,7 +235,7 @@
   },
   {
     "analysisId": 4,
-    "description": "Matching on age and gender, nesting in indication, 10 controls per case",
+    "description": "Nesting in indication, 10 controls per case",
     "getDbCaseDataArgs": {
       "useNestingCohort": true,
       "useObservationEndAsNestingEndDate": true,
@@ -301,6 +304,7 @@
         "selectorType": "byPid",
         "initialBound": 2,
         "maxBoundCount": 5,
+        "algorithm": "ccd",
         "attr_class": "cyclopsControl"
       },
       "attr_class": "args"

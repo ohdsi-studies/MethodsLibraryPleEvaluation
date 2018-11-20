@@ -1,7 +1,7 @@
 [
   {
     "analysisId": 1,
-    "description": "Length of exposure, index date in exposure window",
+    "description": "Time exposed, inc. exp. start date",
     "runSelfControlledCohortArgs": {
       "firstExposureOnly": false,
       "firstOutcomeOnly": true,
@@ -24,7 +24,7 @@
   },
   {
     "analysisId": 2,
-    "description": "30 days of each exposure, index date in exposure window",
+    "description": "30 days, incl. exp. start date",
     "runSelfControlledCohortArgs": {
       "firstExposureOnly": false,
       "firstOutcomeOnly": true,
@@ -47,7 +47,7 @@
   },
   {
     "analysisId": 3,
-    "description": "Length of exposure, index date in exposure window, require full obs",
+    "description": "Time exposed, inc. exp. start date, require full obs.",
     "runSelfControlledCohortArgs": {
       "firstExposureOnly": false,
       "firstOutcomeOnly": true,
@@ -70,7 +70,7 @@
   },
   {
     "analysisId": 4,
-    "description": "Length of exposure, index date ignored",
+    "description": "Time exposed, ex. exp. start date",
     "runSelfControlledCohortArgs": {
       "firstExposureOnly": false,
       "firstOutcomeOnly": true,
@@ -93,7 +93,7 @@
   },
   {
     "analysisId": 5,
-    "description": "30 days of each exposure, index date ignored",
+    "description": "30 days, ex. exp. start date",
     "runSelfControlledCohortArgs": {
       "firstExposureOnly": false,
       "firstOutcomeOnly": true,
@@ -116,7 +116,7 @@
   },
   {
     "analysisId": 6,
-    "description": "Length of exposure, index date ignored, require full obs",
+    "description": "Time exposed, ex. exp. start date, require full obs.",
     "runSelfControlledCohortArgs": {
       "firstExposureOnly": false,
       "firstOutcomeOnly": true,
