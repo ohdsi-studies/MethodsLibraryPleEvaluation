@@ -91,7 +91,7 @@ createCohortMethodSettings <- function(fileName) {
                                                                      studyStartDate = "",
                                                                      studyEndDate = "",
                                                                      excludeDrugsFromCovariates = TRUE,
-                                                                     maxCohortSize = 250000,
+                                                                     maxCohortSize = 1e6,
                                                                      covariateSettings = covariateSettings)
 
     createStudyPopArgs1 <- CohortMethod::createCreateStudyPopulationArgs(removeSubjectsWithPriorOutcome = TRUE,
