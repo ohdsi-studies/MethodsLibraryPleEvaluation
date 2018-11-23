@@ -224,4 +224,15 @@ showExampleControls <- function(exportFolder) {
     CohortMethod::getAttritionTable(strataPop)
     print(paste("Outcomes in T:", sum(strataPop$outcomeCount[strataPop$treatment == 0] != 0)))
     print(paste("Outcomes in C:", sum(strataPop$outcomeCount[strataPop$treatment == 1] != 0)))
+
+    print("CaseControl numbers:")
+    ccFolder <- file.path(outputFolder, "caseControl")
+    omr <- readRDS(file.path(ccFolder, "outcomeModelReference.rds"))
+    omr <- omr[omr$exposureId == 1124300 &
+                   omr$outcomeId == 139099, ]
+    cd <- CaseControl::loadCaseData(file.path(ccFolder, omr$caseDataFolder[omr$analysisId == 4]))
+    print(paste("Nesting cohort size:", nrow(cd$nestingCohorts)))
+    print(paste("Cases before matching:", ffbase::sum.ff(cd$cases$outcomeId == 139099)))
+    ccd <- readRDS(file.path(ccFolder, omr$caseControlDataFile[omr$analysisId == 4]))
+
 }
