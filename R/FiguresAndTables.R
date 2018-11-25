@@ -234,5 +234,8 @@ showExampleControls <- function(exportFolder) {
     print(paste("Nesting cohort size:", nrow(cd$nestingCohorts)))
     print(paste("Cases before matching:", ffbase::sum.ff(cd$cases$outcomeId == 139099)))
     ccd <- readRDS(file.path(ccFolder, omr$caseControlDataFile[omr$analysisId == 4]))
-
+    print(paste("Cases after matching:", sum(ccd$isCase)))
+    print(paste("Controls after matching:", sum(!ccd$isCase)))
+    print(paste("Exposed cases:", sum(ccd$exposed[ccd$isCase])))
+    print(paste("Exposed controls:", sum(ccd$exposed[!ccd$isCase])))
 }
