@@ -20,23 +20,24 @@ imputeExposureLengthForPanther <- function(connectionDetails,
                                            cdmDatabaseSchema,
                                            exposureDatabaseSchema,
                                            exposureTable) {
-    ohdsiNegativeControls <- readRDS(system.file("ohdsiNegativeControls.rds", package = "MethodEvaluation"))
-    exposureIds <- unique(c(ohdsiNegativeControls$targetId, ohdsiNegativeControls$comparatorId))
-    sql <- SqlRender::loadRenderTranslateSql("ExposureLengthImputation.sql",
-                                             "MethodsLibraryPleEvaluation",
-                                             dbms = connectionDetails$dbms,
-                                             oracleTempSchema = oracleTempSchema,
-                                             cdm_database_schema = cdmDatabaseSchema,
-                                             exposure_database_schema = exposureDatabaseSchema,
-                                             exposure_table = exposureTable,
-                                             exposure_ids = exposureIds)
-    connection <- DatabaseConnector::connect(connectionDetails)
-    on.exit(DatabaseConnector::disconnect(connection))
-    DatabaseConnector::executeSql(connection, sql)
+    # # Only impute for exposures in gold standard:
+    # ohdsiNegativeControls <- readRDS(system.file("ohdsiNegativeControls.rds", package = "MethodEvaluation"))
+    # exposureIds <- unique(c(ohdsiNegativeControls$targetId, ohdsiNegativeControls$comparatorId))
+    # sql <- SqlRender::loadRenderTranslateSql("ExposureLengthImputation.sql",
+    #                                          "MethodsLibraryPleEvaluation",
+    #                                          dbms = connectionDetails$dbms,
+    #                                          oracleTempSchema = oracleTempSchema,
+    #                                          cdm_database_schema = cdmDatabaseSchema,
+    #                                          exposure_database_schema = exposureDatabaseSchema,
+    #                                          exposure_table = exposureTable,
+    #                                          exposure_ids = exposureIds)
+    # connection <- DatabaseConnector::connect(connectionDetails)
+    # on.exit(DatabaseConnector::disconnect(connection))
+    # DatabaseConnector::executeSql(connection, sql)
 
 
-
-    exposureTable <- "mschuemi_ohdsi_exposure_all_panther"
+    # Impute for all exposures (needed for MSCCS):
+    # exposureTable <- "mschuemi_ohdsi_exposure_all_panther"
     sql <- SqlRender::loadRenderTranslateSql("ExposureLengthImputation.sql",
                                              "MethodsLibraryPleEvaluation",
                                              dbms = connectionDetails$dbms,
@@ -47,6 +48,18 @@ imputeExposureLengthForPanther <- function(connectionDetails,
     connection <- DatabaseConnector::connect(connectionDetails)
     on.exit(DatabaseConnector::disconnect(connection))
     DatabaseConnector::executeSql(connection, sql)
+
+    ParallelLogger::logInfo("Creating indices on exposure table")
+    sql <- "CREATE INDEX methodEval_temp1 ON @exposure_database_schema.@exposure_table (subject_id);
+    CREATE INDEX methodEval_temp2 ON @exposure_database_schema.@exposure_table (cohort_definition_id);
+    CREATE INDEX methodEval_temp3 ON @exposure_database_schema.@exposure_table (cohort_start_date);"
+    sql <- SqlRender::renderSql(sql,
+                              exposure_database_schema = exposureDatabaseSchema,
+                              exposure_table = exposureTable)$sql
+    sql <- SqlRender::translateSql(sql,
+                                   targetDialect = connectionDetails$dbms)$sql
+    DatabaseConnector::executeSql(connection, sql)
+
 #
 #
 #    sql <- "SELECT COUNT(*) zero_length_count, cohort_definition_id FROM @exposure_database_schema.@exposure_table WHERE cohort_start_date = cohort_end_date AND cohort_definition_id IN (@exposure_ids) GROUP BY cohort_definition_id;"

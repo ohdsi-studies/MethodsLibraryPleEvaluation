@@ -55,6 +55,30 @@ exposureDatabaseSchema <- "scratch.dbo"
 exposureTable = "mschuemi_ohdsi_exposure_panther"
 
 
+# MDCR settings --------------------------------------------------------------------------------
+cdmDatabaseSchema <- "cdm_truven_mdcr_v779.dbo"
+databaseName <- "MDCR"
+outcomeDatabaseSchema <- "scratch.dbo"
+outcomeTable <- "mschuemi_ohdsi_hois_mdcr"
+nestingCohortDatabaseSchema <- "scratch.dbo"
+nestingCohortTable <- "mschuemi_ohdsi_nesting_mdcr"
+outputFolder <- "r:/MethodsLibraryPleEvaluation_mdcr"
+exposureDatabaseSchema <- cdmDatabaseSchema
+exposureTable = "drug_era"
+
+
+# JMDC settings --------------------------------------------------------------------------------
+cdmDatabaseSchema <- "cdm_jmdc_v773.dbo"
+databaseName <- "JMDC"
+outcomeDatabaseSchema <- "scratch.dbo"
+outcomeTable <- "mschuemi_ohdsi_hois_jmdc"
+nestingCohortDatabaseSchema <- "scratch.dbo"
+nestingCohortTable <- "mschuemi_ohdsi_nesting_jmdc"
+outputFolder <- "r:/MethodsLibraryPleEvaluation_jmdc"
+exposureDatabaseSchema <- cdmDatabaseSchema
+exposureTable = "drug_era"
+
+
 
 execute <- function(connectionDetails = connectionDetails,
                     cdmDatabaseSchema = cdmDatabaseSchema,
