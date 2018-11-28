@@ -239,3 +239,268 @@ showExampleControls <- function(exportFolder) {
     print(paste("Exposed cases:", sum(ccd$exposed[ccd$isCase])))
     print(paste("Exposed controls:", sum(ccd$exposed[!ccd$isCase])))
 }
+
+#' @export
+getControlStats <- function(exportFolder) {
+    # CohortMethod
+    estimates <- readRDS(file.path(outputFolder, "cmSummary.rds"))
+    agg <- function(subset) {
+        result <- data.frame(analysisId = subset$analysisId[1],
+                             medianTargetSubjects = median(subset$target),
+                             maxTargetSubjects = max(subset$target),
+                             medianComparatorSubjects = median(subset$comparator),
+                             maxComparatorSubjects = max(subset$comparator),
+                             medianTargetOutcomes = median(subset$eventsTarget),
+                             maxTargetOutcomes = max(subset$eventsTarget),
+                             medianComparatorOutcomes = median(subset$eventsComparator),
+                             maxComparatorOutcomes = max(subset$eventsComparator))
+
+        return(result)
+    }
+    statsCm <- lapply(split(estimates, estimates$analysisId), agg)
+    statsCm <- do.call("rbind", statsCm)
+    analysisRef <- read.csv(file.path(outputFolder, "export", "analysisRef_CohortMethod.csv"))
+    statsCm <- merge(analysisRef[, c("method", "analysisId", "description")], statsCm)
+
+    # SelfControlledCohort
+    estimates <- readRDS(file.path(outputFolder, "sccSummary.rds"))
+    agg <- function(subset) {
+        result <- data.frame(analysisId = subset$analysisId[1],
+                             medianSubjects = median(subset$numPersons),
+                             maxSubjects = max(subset$numPersons),
+                             medianExposures = median(subset$numExposures),
+                             maxExposures = max(subset$numExposures),
+                             medianExposedOutcomes = median(subset$numOutcomesExposed),
+                             maxExposedOutcomes = max(subset$numOutcomesExposed),
+                             medianUnexposedOutcomes = median(subset$numOutcomesUnexposed),
+                             maxUnexposedOutcomes = max(subset$numOutcomesUnexposed))
+
+        return(result)
+    }
+    statsScc <- lapply(split(estimates, estimates$analysisId), agg)
+    statsScc <- do.call("rbind", statsScc)
+    analysisRef <- read.csv(file.path(outputFolder, "export", "analysisRef_SelfControlledCohort.csv"))
+    statsScc <- merge(analysisRef[, c("method", "analysisId", "description")], statsScc)
+
+    # SelfControlledCohort
+    estimates <- readRDS(file.path(outputFolder, "sccSummary.rds"))
+    agg <- function(subset) {
+        result <- data.frame(analysisId = subset$analysisId[1],
+                             medianSubjects = median(subset$numPersons),
+                             maxSubjects = max(subset$numPersons),
+                             medianExposures = median(subset$numExposures),
+                             maxExposures = max(subset$numExposures),
+                             medianExposedOutcomes = median(subset$numOutcomesExposed),
+                             maxExposedOutcomes = max(subset$numOutcomesExposed),
+                             medianUnexposedOutcomes = median(subset$numOutcomesUnexposed),
+                             maxUnexposedOutcomes = max(subset$numOutcomesUnexposed))
+
+        return(result)
+    }
+    statsScc <- lapply(split(estimates, estimates$analysisId), agg)
+    statsScc <- do.call("rbind", statsScc)
+    analysisRef <- read.csv(file.path(outputFolder, "export", "analysisRef_SelfControlledCohort.csv"))
+    statsScc <- merge(analysisRef[, c("method", "analysisId", "description")], statsScc)
+
+    # Case-control
+    estimates <- readRDS(file.path(outputFolder, "ccSummary.rds"))
+    agg <- function(subset) {
+        result <- data.frame(analysisId = subset$analysisId[1],
+                             medianCases = median(subset$cases),
+                             maxCases = max(subset$cases),
+                             medianControls = median(subset$controls),
+                             maxControls = max(subset$controls),
+                             medianExposedCases = median(subset$exposedCases),
+                             maxExposedCases = max(subset$exposedCases),
+                             medianExposedControls = median(subset$exposedControls),
+                             maxExposedControls = max(subset$exposedControls))
+
+        return(result)
+    }
+    statsCc <- lapply(split(estimates, estimates$analysisId), agg)
+    statsCc <- do.call("rbind", statsCc)
+    analysisRef <- read.csv(file.path(outputFolder, "export", "analysisRef_CaseControl.csv"))
+    statsCc <- merge(analysisRef[, c("method", "analysisId", "description")], statsCc)
+
+    # Case-crossover
+    estimates <- readRDS(file.path(outputFolder, "ccrSummary.rds"))
+    agg <- function(subset) {
+        result <- data.frame(analysisId = subset$analysisId[1],
+                             medianCases = median(subset$cases),
+                             maxCases = max(subset$cases),
+                             medianExposedOutcomes = median(subset$exposedCasesCaseWindow),
+                             maxExposedOutcomes = max(subset$exposedCasesCaseWindow),
+                             medianUnexposedOutcomes = median(subset$exposedCasesControlWindow),
+                             maxUnexposedOutcomes = max(subset$exposedCasesControlWindow))
+
+        return(result)
+    }
+    statsCcr <- lapply(split(estimates, estimates$analysisId), agg)
+    statsCcr <- do.call("rbind", statsCcr)
+    analysisRef <- read.csv(file.path(outputFolder, "export", "analysisRef_CaseCrossover.csv"))
+    statsCcr <- merge(analysisRef[, c("method", "analysisId", "description")], statsCcr)
+
+    # Self-controlled case series
+    estimates <- read.csv(file.path(outputFolder, "sccsSummaryStats.csv"))
+    agg <- function(subset) {
+        result <- data.frame(analysisId = subset$analysisId[1],
+                             medianCases = median(subset$cases),
+                             maxCases = max(subset$cases),
+                             medianExposedSubjects = median(subset$exposedSubjects),
+                             maxExposedSubjects = max(subset$exposedSubjects),
+                             medianExposedOutcomes = median(subset$exposedOutcomes),
+                             maxExposedOutcomes = max(subset$exposedOutcomes))
+
+        return(result)
+    }
+    statsSccs <- lapply(split(estimates, estimates$analysisId), agg)
+    statsSccs <- do.call("rbind", statsSccs)
+    analysisRef <- read.csv(file.path(outputFolder, "export", "analysisRef_SelfControlledCaseSeries.csv"))
+    statsSccs <- merge(analysisRef[, c("method", "analysisId", "description")], statsSccs)
+
+
+    # Combine into one table:
+    table <- NULL
+    # stats <- statsCm
+    addStatsToTable <- function(table, stats) {
+        header <- SqlRender::camelCaseToSnakeCase(colnames(stats))
+        header <- gsub("_", " ", header)
+        header <- as.data.frame(t(header), stringsAsFactors = FALSE)
+        colnames(stats) <- colnames(header)
+        for (i in 1:ncol(stats)) {
+           stats[, i] <- as.character(stats[, i])
+        }
+        emptyRow <- header
+        emptyRow[1, ] <- ""
+        temp <- dplyr::bind_rows(header, stats, emptyRow)
+        if (is.null(table)) {
+            table <- temp
+        } else {
+            table <- dplyr::bind_rows(table, temp)
+        }
+        return(table)
+    }
+    table <- addStatsToTable(table, statsCm)
+    table <- addStatsToTable(table, statsScc)
+    table <- addStatsToTable(table, statsCc)
+    table <- addStatsToTable(table, statsCcr)
+    table <- addStatsToTable(table, statsSccs)
+    table <- table[, -1]
+    write.csv(table, file.path(outputFolder, "methodCounts.csv"), row.names = FALSE, na = "")
+}
+
+
+biasPlots <- function(exportFolder) {
+    files <- list.files(exportFolder, "estimates.*csv", full.names = TRUE)
+    estimates <- lapply(files, read.csv)
+    estimates <- do.call("rbind", estimates)
+    estimates <- estimates[estimates$targetEffectSize == 1, ]
+
+    files <- list.files(exportFolder, "analysisRef.*csv", full.names = TRUE)
+    analysisRef <- lapply(files, read.csv)
+    analysisRef <- do.call("rbind", analysisRef)
+    for (i in 1:nrow(analysisRef)) {
+        fileName <- file.path(outputFolder, sprintf("Bias_%s_%s.png", analysisRef$method[i],  analysisRef$analysisId[i]))
+        subset <- estimates[estimates$method == analysisRef$method[i] &
+                                estimates$analysisId == analysisRef$analysisId[i], ]
+        # EmpiricalCalibration::plotForest(logRr = subset$logRr,
+        #                                  seLogRr = subset$seLogRr,
+        #                                  names = paste(subset$targetName, subset$outcomeName, sep = " - "))
+        EmpiricalCalibration::plotCalibrationEffect(logRrNegatives = subset$logRr,
+                                                    seLogRrNegatives = subset$seLogRr,
+                                                    fileName = fileName)
+    }
+}
+
+scatterPlots <- function(exportFolder) {
+    files <- list.files(exportFolder, "estimates.*csv", full.names = TRUE)
+    estimates <- lapply(files, read.csv)
+    estimates <- do.call("rbind", estimates)
+    # estimates <- estimates[estimates$targetEffectSize == 1, ]
+    estimates <- estimates[(estimates$method == "CaseControl" & estimates$analysisId == 4) |
+                               (estimates$method == "CohortMethod" & estimates$analysisId == 2), ]
+
+    d <- estimates
+    d$Group <- paste("True effect size =", d$targetEffectSize)
+    d$method <- as.character(d$method)
+    d$method[d$method == "CaseControl"] <- "Case-control"
+    d$method[d$method == "CohortMethod"] <- "Cohort method"
+    d$method <- factor(d$method, levels = c("Cohort method", "Case-control"))
+    d$Significant <- d$ci95Lb > d$targetEffectSize | d$ci95Ub < d$targetEffectSize
+
+    temp1 <- aggregate(Significant ~ Group + method, data = d, length)
+    temp2 <- aggregate(Significant ~ Group + method, data = d, mean)
+
+    temp1$nLabel <- paste0(formatC(temp1$Significant, big.mark = ","), " estimates")
+    temp1$Significant <- NULL
+
+    temp2$meanLabel <- paste0(formatC(100 * (1 - temp2$Significant), digits = 1, format = "f"),
+                              "% of CIs includes ",
+                              substr(as.character(temp2$Group), start = 20, stop = nchar(as.character(temp2$Group))))
+    temp2$Significant <- NULL
+    dd <- merge(temp1, temp2)
+    # print(substr(as.character(dd$Group), start = 20, stop = nchar(as.character(dd$Group))))
+    dd$tes <- as.numeric(substr(as.character(dd$Group), start = 20, stop = nchar(as.character(dd$Group))))
+    library(ggplot2)
+    breaks <- c(0.25, 0.5, 1, 2, 4, 6, 8, 10)
+
+
+    theme <- element_text(colour = "#000000", size = 14)
+    themeRA <- element_text(colour = "#000000", size = 14, hjust = 1)
+    themeLA <- element_text(colour = "#000000", size = 14, hjust = 0)
+
+    alpha <- 1 - min(0.95*(nrow(d)/nrow(dd)/50000)^0.1, 0.95)
+    # All true effect sizes
+    plot <- ggplot(d, aes(x = logRr, y= seLogRr), environment = environment()) +
+        geom_vline(xintercept = log(breaks), colour = "#CCCCCC", lty = 1, size = 0.5) +
+        geom_abline(aes(intercept = (-log(tes))/qnorm(0.025), slope = 1/qnorm(0.025)), colour = rgb(0.8, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
+        geom_abline(aes(intercept = (-log(tes))/qnorm(0.975), slope = 1/qnorm(0.975)), colour = rgb(0.8, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
+        geom_point(size = 2, color = rgb(0, 0, 0, alpha = 0.05), alpha = alpha, shape = 16) +
+        geom_hline(yintercept = 0) +
+        geom_label(x = log(0.26), y = 0.95, alpha = 1, hjust = "left", aes(label = nLabel), size = 5, data = dd) +
+        geom_label(x = log(0.26), y = 0.8, alpha = 1, hjust = "left", aes(label = meanLabel), size = 5, data = dd) +
+        scale_x_continuous("Estimated effect size", limits = log(c(0.25, 10)), breaks = log(breaks), labels = breaks) +
+        scale_y_continuous("Standard Error", limits = c(0, 1)) +
+        facet_grid(method ~ Group) +
+        theme(panel.grid.minor = element_blank(),
+              panel.background = element_blank(),
+              panel.grid.major = element_blank(),
+              axis.ticks = element_blank(),
+              axis.text.y = themeRA,
+              axis.text.x = theme,
+              axis.title = theme,
+              legend.key = element_blank(),
+              strip.text.x = theme,
+              strip.text.y = theme,
+              strip.background = element_blank(),
+              legend.position = "none")
+    ggsave(file.path(outputFolder, "exampleEffects.png"), plot, width = 12, height = 6, dpi = 300)
+
+    d <- d[d$targetEffectSize == 1, ]
+    dd <- dd[dd$tes == 1, ]
+    plot <- ggplot(d, aes(x = logRr, y= seLogRr), environment = environment()) +
+        geom_vline(xintercept = log(breaks), colour = "#CCCCCC", lty = 1, size = 0.5) +
+        geom_abline(aes(intercept = (-log(tes))/qnorm(0.025), slope = 1/qnorm(0.025)), colour = rgb(0.8, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
+        geom_abline(aes(intercept = (-log(tes))/qnorm(0.975), slope = 1/qnorm(0.975)), colour = rgb(0.8, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
+        geom_point(size = 2, color = rgb(0, 0, 0, alpha = 0.05), alpha = alpha, shape = 16) +
+        geom_hline(yintercept = 0) +
+        geom_label(x = log(0.26), y = 0.95, alpha = 1, hjust = "left", aes(label = nLabel), size = 5, data = dd) +
+        geom_label(x = log(0.26), y = 0.8, alpha = 1, hjust = "left", aes(label = meanLabel), size = 5, data = dd) +
+        scale_x_continuous("Estimated effect size", limits = log(c(0.25, 10)), breaks = log(breaks), labels = breaks) +
+        scale_y_continuous("Standard Error", limits = c(0, 1)) +
+        facet_grid(. ~ method) +
+        theme(panel.grid.minor = element_blank(),
+              panel.background = element_blank(),
+              panel.grid.major = element_blank(),
+              axis.ticks = element_blank(),
+              axis.text.y = themeRA,
+              axis.text.x = theme,
+              axis.title = theme,
+              legend.key = element_blank(),
+              strip.text.x = theme,
+              strip.text.y = theme,
+              strip.background = element_blank(),
+              legend.position = "none")
+    ggsave(file.path(outputFolder, "exampleEffects.png"), plot, width = 12, height = 6, dpi = 300)
+}
+
