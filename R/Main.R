@@ -93,7 +93,7 @@ execute <- function(connectionDetails,
                         outcomeTable = outcomeTable,
                         outputFolder = outputFolder,
                         cdmVersion = cdmVersion,
-                        maxCores = 32)
+                        maxCores = maxCores)
     }
 
     if (runSelfControlledCaseSeries) {
@@ -104,7 +104,8 @@ execute <- function(connectionDetails,
                                     outcomeDatabaseSchema = outcomeDatabaseSchema,
                                     outcomeTable = outcomeTable,
                                     outputFolder = outputFolder,
-                                    cdmVersion = cdmVersion)
+                                    cdmVersion = cdmVersion,
+                                    maxCores = maxCores)
     }
 
     if (runSelfControlledCohort) {
@@ -115,7 +116,8 @@ execute <- function(connectionDetails,
                                 outcomeDatabaseSchema = outcomeDatabaseSchema,
                                 outcomeTable = outcomeTable,
                                 outputFolder = outputFolder,
-                                cdmVersion = cdmVersion)
+                                cdmVersion = cdmVersion,
+                                maxCores = maxCores)
     }
 
     if (runCaseControl) {
@@ -129,7 +131,7 @@ execute <- function(connectionDetails,
                        nestingCohortTable = nestingCohortTable,
                        outputFolder = outputFolder,
                        cdmVersion = cdmVersion,
-                       maxCores = 20)
+                       maxCores = maxCores)
     }
 
     if (runCaseCrossover) {
@@ -143,7 +145,7 @@ execute <- function(connectionDetails,
                          nestingCohortTable = nestingCohortTable,
                          outputFolder = outputFolder,
                          cdmVersion = cdmVersion,
-                         maxCores = 20)
+                         maxCores = cdmVersion)
     }
 
     if (packageResults) {

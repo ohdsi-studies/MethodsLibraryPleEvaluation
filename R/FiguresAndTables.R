@@ -127,6 +127,7 @@ showExampleControls <- function(exportFolder) {
     d$description <- factor(d$description, levels = rev(labels$description))
 
     # One plot with both calibrated and uncalibrated
+    breaks <- c(0.25, 0.5, 1, 2, 3, 4)
     plot <- ggplot2::ggplot(d, ggplot2::aes(x = rr, y = description, xmin = ci95Lb, xmax = ci95Ub)) +
         ggplot2::geom_vline(xintercept = breaks, colour = "#AAAAAA", lty = 1, size = 0.2) +
         ggplot2::geom_vline(xintercept = 1,size = 0.5) +
@@ -474,7 +475,7 @@ scatterPlots <- function(exportFolder) {
               strip.text.y = theme,
               strip.background = element_blank(),
               legend.position = "none")
-    ggsave(file.path(outputFolder, "exampleEffects.png"), plot, width = 12, height = 6, dpi = 300)
+    ggsave(file.path(outputFolder, "exampleEffects.png"), plot, width = 12, height = 5, dpi = 400)
 
     d <- d[d$targetEffectSize == 1, ]
     dd <- dd[dd$tes == 1, ]
@@ -501,6 +502,6 @@ scatterPlots <- function(exportFolder) {
               strip.text.y = theme,
               strip.background = element_blank(),
               legend.position = "none")
-    ggsave(file.path(outputFolder, "exampleEffects.png"), plot, width = 12, height = 6, dpi = 300)
+    ggsave(file.path(outputFolder, "exampleEffectsNcs.png"), plot, width = 8, height = 4, dpi = 300)
 }
 

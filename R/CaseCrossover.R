@@ -38,7 +38,6 @@ runCaseCrossover <- function(connectionDetails,
     ccrSummaryFile <- file.path(outputFolder, "ccrSummary.rds")
     if (!file.exists(ccrSummaryFile)) {
         allControls <- read.csv(file.path(outputFolder , "allControls.csv"))
-        allControls <- unique(allControls[, c("targetId", "outcomeId", "nestingId")])
         eonList <- list()
         for (i in 1:nrow(allControls)) {
             eonList[[length(eonList) + 1]] <- CaseCrossover::createExposureOutcomeNestingCohort(exposureId = allControls$targetId[i],

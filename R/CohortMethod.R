@@ -71,7 +71,7 @@ runCohortMethod <- function(connectionDetails,
                                                 createPsThreads = min(3, maxCores),
                                                 psCvThreads = min(10, floor(maxCores/3)),
                                                 trimMatchStratifyThreads = min(10, maxCores),
-                                                fitOutcomeModelThreads = min(max(1, floor(maxCores/8)), 4),
+                                                fitOutcomeModelThreads = min(max(1, floor(maxCores/8)), 3),
                                                 outcomeCvThreads = min(10, maxCores))
 
         cmSummary <- CohortMethod::summarizeAnalyses(cmResult, cmFolder)

@@ -25,7 +25,8 @@ runSelfControlledCohort <- function(connectionDetails,
                                     exposureDatabaseSchema = cdmDatabaseSchema,
                                     exposureTable = "drug_era",
                                     outputFolder,
-                                    cdmVersion = "5") {
+                                    cdmVersion = "5",
+                                    maxCores) {
     start <- Sys.time()
 
     sccFolder <- file.path(outputFolder, "selfControlledCohort")

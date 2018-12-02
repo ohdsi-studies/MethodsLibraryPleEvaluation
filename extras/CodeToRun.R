@@ -31,6 +31,18 @@ connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
                                                                 password = pw,
                                                                 port = port)
 
+# E-mail settings -----------------------------------------------------------------------------
+mailSettings <- list(from = Sys.getenv("mailAddress"),
+                     to = c(Sys.getenv("mailAddress")),
+                     smtp = list(host.name = "smtp.gmail.com",
+                                 port = 465,
+                                 user.name = Sys.getenv("mailAddress"),
+                                 passwd = Sys.getenv("mailPassword"),
+                                 ssl = TRUE),
+                     authenticate = TRUE,
+                     send = TRUE)
+ParallelLogger::addDefaultEmailLogger(mailSettings = mailSettings, label = Sys.info()["nodename"])
+
 # CCAE settings --------------------------------------------------------------------------------
 cdmDatabaseSchema <- "cdm_truven_ccae_v778.dbo"
 databaseName <- "CCAE"
@@ -41,6 +53,7 @@ nestingCohortTable <- "mschuemi_ohdsi_nesting_ccae"
 outputFolder <- "r:/MethodsLibraryPleEvaluation_ccae"
 exposureDatabaseSchema <- cdmDatabaseSchema
 exposureTable = "drug_era"
+exportFolder <- file.path(outputFolder, "export")
 
 
 # Optum Panther settings ----------------------------------------------------------------
@@ -53,6 +66,7 @@ nestingCohortTable <- "mschuemi_ohdsi_nesting_panther"
 outputFolder <- "r:/MethodsLibraryPleEvaluation_panther"
 exposureDatabaseSchema <- "scratch.dbo"
 exposureTable = "mschuemi_ohdsi_exposure_panther"
+exportFolder <- file.path(outputFolder, "export")
 
 
 # MDCR settings --------------------------------------------------------------------------------
@@ -65,6 +79,7 @@ nestingCohortTable <- "mschuemi_ohdsi_nesting_mdcr"
 outputFolder <- "r:/MethodsLibraryPleEvaluation_mdcr"
 exposureDatabaseSchema <- cdmDatabaseSchema
 exposureTable = "drug_era"
+exportFolder <- file.path(outputFolder, "export")
 
 
 # JMDC settings --------------------------------------------------------------------------------
@@ -77,6 +92,7 @@ nestingCohortTable <- "mschuemi_ohdsi_nesting_jmdc"
 outputFolder <- "r:/MethodsLibraryPleEvaluation_jmdc"
 exposureDatabaseSchema <- cdmDatabaseSchema
 exposureTable = "drug_era"
+exportFolder <- file.path(outputFolder, "export")
 
 
 
@@ -100,7 +116,7 @@ execute <- function(connectionDetails = connectionDetails,
                     runCaseCrossover = TRUE,
                     packageResults = TRUE)
 
-exportFolder <- file.path(outputFolder, "export")
+
 MethodEvaluation::launchMethodEvaluationApp(exportFolder)
 
 
