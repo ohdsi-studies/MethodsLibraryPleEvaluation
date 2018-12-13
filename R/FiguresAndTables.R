@@ -504,3 +504,47 @@ scatterPlots <- function(exportFolder) {
     ggplot2::ggsave(file.path(outputFolder, "exampleEffectsNcs.png"), plot, width = 8, height = 4, dpi = 300)
 }
 
+createTableWithAllEstimates <- function(rootOutputFolderName = "MethodsLibraryPleEvaluation_", rootFolder = "r:") {
+    outputFolders <- list.files(rootFolder, rootOutputFolderName)
+    loadEstimates <- function(outputFolder) {
+        exportFolder <- file.path(rootFolder, outputFolder, "export")
+        files <- list.files(exportFolder, "estimates.*csv", full.names = TRUE)
+        estimates <- lapply(files, read.csv)
+        estimates <- do.call("rbind", estimates)
+        return(estimates)
+    }
+    estimates <- lapply(outputFolders, loadEstimates)
+    estimates <- do.call("rbind", estimates)
+    z <- estimates$logRr/estimates$seLogRr
+    estimates$p <- 2 * pmin(pnorm(z), 1 - pnorm(z))
+    files <- list.files(file.path(rootFolder, outputFolders[1], "export"), "analysisRef.*csv", full.names = TRUE)
+    analysisRef <- lapply(files, read.csv)
+    analysisRef <- do.call("rbind", analysisRef)
+    estimates <- merge(estimates, analysisRef[, c("method", "analysisId", "description")])
+    estimates <- estimates[, c("database",
+                               "method",
+                               "description",
+                               "comparative",
+                               "firstExposureOnly",
+                               "targetName",
+                               "comparatorName",
+                               "nestingName",
+                               "outcomeName",
+                               "targetEffectSize",
+                               "trueEffectSize",
+                               "trueEffectSizeFirstExposure",
+                               "mdrrTarget",
+                               "mdrrComparator",
+                               "stratum",
+                               "logRr",
+                               "seLogRr",
+                               "ci95Lb",
+                               "ci95Ub",
+                               "p",
+                               "calLogRr",
+                               "calSeLogRr",
+                               "calCi95Lb",
+                               "calCi95Ub",
+                               "calP")]
+    write.csv(estimates, file.path(rootFolder, outputFolders[1], "allEstimates.csv"), row.names = FALSE)
+}
