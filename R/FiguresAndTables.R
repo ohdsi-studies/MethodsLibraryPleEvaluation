@@ -86,7 +86,7 @@ createFiguresAndTables <- function(exportFolder) {
 }
 
 #' @export
-showExampleControls <- function(exportFolder) {
+showExampleControls <- function(outputFolder, exportFolder) {
     files <- list.files(exportFolder, "estimates.*csv", full.names = TRUE)
     estimates <- lapply(files, read.csv)
     estimates <- do.call("rbind", estimates)
@@ -242,7 +242,7 @@ showExampleControls <- function(exportFolder) {
 }
 
 #' @export
-getControlStats <- function(exportFolder) {
+getControlStats <- function(outputFolder, exportFolder) {
     # CohortMethod
     estimates <- readRDS(file.path(outputFolder, "cmSummary.rds"))
     agg <- function(subset) {
@@ -391,7 +391,7 @@ getControlStats <- function(exportFolder) {
 }
 
 
-biasPlots <- function(exportFolder) {
+biasPlots <- function(outputFolder, exportFolder) {
     files <- list.files(exportFolder, "estimates.*csv", full.names = TRUE)
     estimates <- lapply(files, read.csv)
     estimates <- do.call("rbind", estimates)
@@ -442,66 +442,65 @@ scatterPlots <- function(exportFolder) {
     dd <- merge(temp1, temp2)
     # print(substr(as.character(dd$Group), start = 20, stop = nchar(as.character(dd$Group))))
     dd$tes <- as.numeric(substr(as.character(dd$Group), start = 20, stop = nchar(as.character(dd$Group))))
-    library(ggplot2)
     breaks <- c(0.25, 0.5, 1, 2, 4, 6, 8, 10)
 
 
-    theme <- element_text(colour = "#000000", size = 14)
-    themeRA <- element_text(colour = "#000000", size = 14, hjust = 1)
-    themeLA <- element_text(colour = "#000000", size = 14, hjust = 0)
+    theme <- ggplot2::element_text(colour = "#000000", size = 14)
+    themeRA <- ggplot2::element_text(colour = "#000000", size = 14, hjust = 1)
+    themeLA <- ggplot2::element_text(colour = "#000000", size = 14, hjust = 0)
 
     alpha <- 1 - min(0.95*(nrow(d)/nrow(dd)/50000)^0.1, 0.95)
     # All true effect sizes
-    plot <- ggplot(d, aes(x = logRr, y= seLogRr), environment = environment()) +
-        geom_vline(xintercept = log(breaks), colour = "#CCCCCC", lty = 1, size = 0.5) +
-        geom_abline(aes(intercept = (-log(tes))/qnorm(0.025), slope = 1/qnorm(0.025)), colour = rgb(0.8, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
-        geom_abline(aes(intercept = (-log(tes))/qnorm(0.975), slope = 1/qnorm(0.975)), colour = rgb(0.8, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
-        geom_point(size = 2, color = rgb(0, 0, 0, alpha = 0.05), alpha = alpha, shape = 16) +
-        geom_hline(yintercept = 0) +
-        geom_label(x = log(0.26), y = 0.95, alpha = 1, hjust = "left", aes(label = nLabel), size = 5, data = dd) +
-        geom_label(x = log(0.26), y = 0.8, alpha = 1, hjust = "left", aes(label = meanLabel), size = 5, data = dd) +
-        scale_x_continuous("Estimated effect size", limits = log(c(0.25, 10)), breaks = log(breaks), labels = breaks) +
-        scale_y_continuous("Standard Error", limits = c(0, 1)) +
-        facet_grid(method ~ Group) +
-        theme(panel.grid.minor = element_blank(),
-              panel.background = element_blank(),
-              panel.grid.major = element_blank(),
-              axis.ticks = element_blank(),
-              axis.text.y = themeRA,
-              axis.text.x = theme,
-              axis.title = theme,
-              legend.key = element_blank(),
-              strip.text.x = theme,
-              strip.text.y = theme,
-              strip.background = element_blank(),
-              legend.position = "none")
-    ggsave(file.path(outputFolder, "exampleEffects.png"), plot, width = 12, height = 5, dpi = 400)
+    plot <- ggplot2::ggplot(d, ggplot2::aes(x = logRr, y= seLogRr), environment = environment()) +
+        ggplot2::geom_vline(xintercept = log(breaks), colour = "#CCCCCC", lty = 1, size = 0.5) +
+        ggplot2::geom_abline(ggplot2::aes(intercept = (-log(tes))/qnorm(0.025), slope = 1/qnorm(0.025)), colour = rgb(0.8, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
+        ggplot2::geom_abline(ggplot2::aes(intercept = (-log(tes))/qnorm(0.975), slope = 1/qnorm(0.975)), colour = rgb(0.8, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
+        ggplot2::geom_point(size = 2, color = rgb(0, 0, 0, alpha = 0.05), alpha = alpha, shape = 16) +
+        ggplot2::geom_hline(yintercept = 0) +
+        ggplot2::geom_label(x = log(0.26), y = 0.95, alpha = 1, hjust = "left", ggplot2::aes(label = nLabel), size = 5, data = dd) +
+        ggplot2::geom_label(x = log(0.26), y = 0.8, alpha = 1, hjust = "left", ggplot2::aes(label = meanLabel), size = 5, data = dd) +
+        ggplot2::scale_x_continuous("Estimated effect size", limits = log(c(0.25, 10)), breaks = log(breaks), labels = breaks) +
+        ggplot2::scale_y_continuous("Standard Error", limits = c(0, 1)) +
+        ggplot2::facet_grid(method ~ Group) +
+        ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+                       panel.background = ggplot2::element_blank(),
+                       panel.grid.major = ggplot2::element_blank(),
+                       axis.ticks = ggplot2::element_blank(),
+                       axis.text.y = themeRA,
+                       axis.text.x = theme,
+                       axis.title = theme,
+                       legend.key = ggplot2::element_blank(),
+                       strip.text.x = theme,
+                       strip.text.y = theme,
+                       strip.background = ggplot2::element_blank(),
+                       legend.position = "none")
+    ggplot2::ggsave(file.path(outputFolder, "exampleEffects.png"), plot, width = 12, height = 5, dpi = 400)
 
     d <- d[d$targetEffectSize == 1, ]
     dd <- dd[dd$tes == 1, ]
-    plot <- ggplot(d, aes(x = logRr, y= seLogRr), environment = environment()) +
-        geom_vline(xintercept = log(breaks), colour = "#CCCCCC", lty = 1, size = 0.5) +
-        geom_abline(aes(intercept = (-log(tes))/qnorm(0.025), slope = 1/qnorm(0.025)), colour = rgb(0.8, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
-        geom_abline(aes(intercept = (-log(tes))/qnorm(0.975), slope = 1/qnorm(0.975)), colour = rgb(0.8, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
-        geom_point(size = 2, color = rgb(0, 0, 0, alpha = 0.05), alpha = alpha, shape = 16) +
-        geom_hline(yintercept = 0) +
-        geom_label(x = log(0.26), y = 0.95, alpha = 1, hjust = "left", aes(label = nLabel), size = 5, data = dd) +
-        geom_label(x = log(0.26), y = 0.8, alpha = 1, hjust = "left", aes(label = meanLabel), size = 5, data = dd) +
-        scale_x_continuous("Estimated effect size", limits = log(c(0.25, 10)), breaks = log(breaks), labels = breaks) +
-        scale_y_continuous("Standard Error", limits = c(0, 1)) +
-        facet_grid(. ~ method) +
-        theme(panel.grid.minor = element_blank(),
-              panel.background = element_blank(),
-              panel.grid.major = element_blank(),
-              axis.ticks = element_blank(),
-              axis.text.y = themeRA,
-              axis.text.x = theme,
-              axis.title = theme,
-              legend.key = element_blank(),
-              strip.text.x = theme,
-              strip.text.y = theme,
-              strip.background = element_blank(),
-              legend.position = "none")
-    ggsave(file.path(outputFolder, "exampleEffectsNcs.png"), plot, width = 8, height = 4, dpi = 300)
+    plot <- ggplot2::ggplot(d, ggplot2::aes(x = logRr, y= seLogRr), environment = environment()) +
+        ggplot2::geom_vline(xintercept = log(breaks), colour = "#CCCCCC", lty = 1, size = 0.5) +
+        ggplot2::geom_abline(ggplot2::aes(intercept = (-log(tes))/qnorm(0.025), slope = 1/qnorm(0.025)), colour = rgb(0.8, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
+        ggplot2::geom_abline(ggplot2::aes(intercept = (-log(tes))/qnorm(0.975), slope = 1/qnorm(0.975)), colour = rgb(0.8, 0, 0), linetype = "dashed", size = 1, alpha = 0.5, data = dd) +
+        ggplot2::geom_point(size = 2, color = rgb(0, 0, 0, alpha = 0.05), alpha = alpha, shape = 16) +
+        ggplot2::geom_hline(yintercept = 0) +
+        ggplot2::geom_label(x = log(0.26), y = 0.95, alpha = 1, hjust = "left", ggplot2::aes(label = nLabel), size = 5, data = dd) +
+        ggplot2::geom_label(x = log(0.26), y = 0.8, alpha = 1, hjust = "left", ggplot2::aes(label = meanLabel), size = 5, data = dd) +
+        ggplot2::scale_x_continuous("Estimated effect size", limits = log(c(0.25, 10)), breaks = log(breaks), labels = breaks) +
+        ggplot2::scale_y_continuous("Standard Error", limits = c(0, 1)) +
+        ggplot2::facet_grid(. ~ method) +
+        ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+                       panel.background = ggplot2::element_blank(),
+                       panel.grid.major = ggplot2::element_blank(),
+                       axis.ticks = ggplot2::element_blank(),
+                       axis.text.y = themeRA,
+                       axis.text.x = theme,
+                       axis.title = theme,
+                       legend.key = ggplot2::element_blank(),
+                       strip.text.x = theme,
+                       strip.text.y = theme,
+                       strip.background = ggplot2::element_blank(),
+                       legend.position = "none")
+    ggplot2::ggsave(file.path(outputFolder, "exampleEffectsNcs.png"), plot, width = 8, height = 4, dpi = 300)
 }
 

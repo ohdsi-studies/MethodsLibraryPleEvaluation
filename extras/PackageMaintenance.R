@@ -17,21 +17,13 @@
 # Format and check code
 OhdsiRTools::formatRFolder()
 OhdsiRTools::checkUsagePackage("MethodsLibraryPleEvaluation")
-OhdsiRTools::updateCopyrightYearFolder()
-
-# Create manual
-shell("rm extras/MethodsLibraryPleEvaluation.pdf")
-shell("R CMD Rd2pdf ./ --output=extras/MethodsLibraryPleEvaluation.pdf")
 
 # Create analysis details
 MethodsLibraryPleEvaluation::createCohortMethodSettings(fileName = "inst/settings/cmAnalysisSettings.txt")
 MethodsLibraryPleEvaluation::createSccsSettings(fileName = "inst/settings/sccsAnalysisSettings.txt")
 MethodsLibraryPleEvaluation::createSelfControlledCohortSettings(fileName = "inst/settings/sccAnalysisSettings.txt")
-# MethodsLibraryPleEvaluation::createIctpdSettings(fileName = "inst/settings/ictpdAnalysisSettings.txt")
 MethodsLibraryPleEvaluation::createCaseControlSettings(fileName = "inst/settings/ccAnalysisSettings.txt")
 MethodsLibraryPleEvaluation::createCaseCrossoverSettings(fileName = "inst/settings/ccrAnalysisSettings.txt")
 
-# Insert cohort definitions into package
-# OhdsiRTools::insertCirceDefinitionInPackage(2409, "Rheumatoid arthritis")
-OhdsiRTools::insertCirceDefinitionInPackage(2542, "Osteoarthritis")
+
 

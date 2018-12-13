@@ -96,27 +96,34 @@ exportFolder <- file.path(outputFolder, "export")
 
 
 
-execute <- function(connectionDetails = connectionDetails,
-                    cdmDatabaseSchema = cdmDatabaseSchema,
-                    oracleTempSchema = oracleTempSchema,
-                    outcomeDatabaseSchema = outcomeDatabaseSchema,
-                    outcomeTable = outcomeTable,
-                    nestingCohortDatabaseSchema = nestingCohortDatabaseSchema,
-                    nestingCohortTable = nestingCohortTable,
-                    outputFolder = outputFolder,
-                    databaseName = databaseName,
-                    maxCores = maxCores,
-                    cdmVersion = cdmVersion,
-                    createNegativeControlCohorts = TRUE,
-                    synthesizePositiveControls = TRUE,
-                    runCohortMethod = TRUE,
-                    runSelfControlledCaseSeries = TRUE,
-                    runSelfControlledCohort = TRUE,
-                    runCaseControl = TRUE,
-                    runCaseCrossover = TRUE,
-                    packageResults = TRUE)
+execute(connectionDetails = connectionDetails,
+        cdmDatabaseSchema = cdmDatabaseSchema,
+        oracleTempSchema = oracleTempSchema,
+        outcomeDatabaseSchema = outcomeDatabaseSchema,
+        outcomeTable = outcomeTable,
+        nestingCohortDatabaseSchema = nestingCohortDatabaseSchema,
+        nestingCohortTable = nestingCohortTable,
+        exposureDatabaseSchema = exposureDatabaseSchema,
+        exposureTable = exposureTable,
+        outputFolder = outputFolder,
+        databaseName = databaseName,
+        maxCores = maxCores,
+        cdmVersion = cdmVersion,
+        createNegativeControlCohorts = TRUE,
+        synthesizePositiveControls = TRUE,
+        runCohortMethod = TRUE,
+        runSelfControlledCaseSeries = TRUE,
+        runSelfControlledCohort = TRUE,
+        runCaseControl = TRUE,
+        runCaseCrossover = TRUE,
+        packageResults = TRUE)
 
 
 MethodEvaluation::launchMethodEvaluationApp(exportFolder)
+
+metrics <- MethodEvaluation::computeOhdsiBenchmarkMetrics(exportFolder = exportFolder, calibrated = FALSE)
+write.csv(metrics, file.path(outputFolder, sprintf("metrics_%s.csv", databaseName)), row.names = FALSE)
+metrics <- MethodEvaluation::computeOhdsiBenchmarkMetrics(exportFolder = exportFolder, calibrated = TRUE)
+write.csv(metrics, file.path(outputFolder, sprintf("metrics_calibrated_%s.csv", databaseName)), row.names = FALSE)
 
 

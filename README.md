@@ -1,7 +1,7 @@
 OHDSI Evaluation of Population-Level Estimation Methods
 =======================================================
 
-This study aims to evaluate the performance of verious methods in the OHDSI methods library.
+This study aims to evaluate the performance of verious methods in the OHDSI methods library. The study protocol can be found in the *extras* folder.
 
 How to run
 ==========
@@ -12,103 +12,88 @@ How to run
 	```r
 	install.packages("devtools")
 	library(devtools)
-	install_github("ohdsi/OhdsiRTools") 
-	install_github("ohdsi/SqlRender")
-	install_github("ohdsi/DatabaseConnector")
-	install_github("ohdsi/Cyclops")
-	install_github("ohdsi/FeatureExtraction") 
-	install_github("ohdsi/CohortMethod")
-	install_github("ohdsi/SelfControlledCohort")
-	install_github("ohdsi/SelfControlledCaseSeries")
-	install_github("ohdsi/IcTemporalPatternDiscovery")
-	install_github("ohdsi/CaseControl")
-	install_github("ohdsi/CaseCrossover")
-	install_github("ohdsi/OhdsiSharing")
-	install_github("ohdsi/MethodEvaluation")
-	install_github("ohdsi/StudyProtocolSandbox/MethodsLibraryPleEvaluation")
+    install_github("ohdsi/Cyclops", ref = "v2.0.1")
+    install_github("ohdsi/FeatureExtraction", ref = "v2.1.5")
+    install_github("ohdsi/EmpiricalCalibration", ref = "v1.4.0")
+    install_github("ohdsi/CohortMethod", ref = "v3.0.1")
+    install_github("ohdsi/SelfControlledCaseSeries", ref = "v1.4.0")
+    install_github("ohdsi/CaseControl", ref = "v1.5.0")
+    install_github("ohdsi/SelfControlledCohort", ref = "v1.5.0")
+    install_github("ohdsi/CaseCrossover", ref = "v1.1.0")
+    install_github("ohdsi/MethodEvaluation", ref = "v1.0.0")
+	install_github("schuemie/MethodsLibraryPleEvaluation")
 	```
 
 3. Once installed, you can execute the study by modifying and using the following code:
 
 	```r
 	library(MethodsLibraryPleEvaluation)
+	
+	# Optional: specify where the temporary files (used by the ff package) will be created:
+    options(fftempdir = "c:/FFtemp")
 
+    # Maximum number of cores to be used:
+    maxCores <- parallel::detectCores()
+
+    # Details for connecting to the server:
 	connectionDetails <- createConnectionDetails(dbms = "postgresql",
 												 user = "joe",
 												 password = "secret",
 												 server = "myserver")
-    workFolder <- "s:/temp/MethodsLibraryPleEvaluation"
+												 
+    # The name of the database schema where the CDM data can be found:
+    cdmDatabaseSchema <- "cdm_truven_ccae_v778.dbo"
+    
+    # The name of the database
+    databaseName <- "CCAE"
+    
+    # The name of the database schema and tables where the study-specific cohorts will be instantiated:
+    outcomeDatabaseSchema <- "scratch.dbo"
+    outcomeTable <- "mschuemi_ohdsi_hois_ccae"
+    nestingCohortDatabaseSchema <- "scratch.dbo"
+    nestingCohortTable <- "mschuemi_ohdsi_nesting_ccae"
 
-	injectSignals(connectionDetails = connectionDetails,
-                  cdmDatabaseSchema = cdmDatabaseSchema,
-                  oracleTempSchema = oracleTempSchema,
-                  outcomeDatabaseSchema = outcomeDatabaseSchema,
-                  outcomeTable = outcomeTable,
-                  workFolder = workFolder,
-                  cdmVersion = cdmVersion,
-                  createBaselineCohorts = TRUE)
+    # For Oracle: define a schema that can be used to emulate temp tables:
+    oracleTempSchema <- NULL
     
-    runCohortMethod(connectionDetails = connectionDetails,
-                    cdmDatabaseSchema = cdmDatabaseSchema,
-                    oracleTempSchema = oracleTempSchema,
-                    outcomeDatabaseSchema = outcomeDatabaseSchema,
-                    outcomeTable = outcomeTable,
-                    workFolder = workFolder,
-                    cdmVersion = cdmVersion)
-    
-    runSelfControlledCaseSeries(connectionDetails = connectionDetails,
-                                cdmDatabaseSchema = cdmDatabaseSchema,
-                                oracleTempSchema = oracleTempSchema,
-                                outcomeDatabaseSchema = outcomeDatabaseSchema,
-                                outcomeTable = outcomeTable,
-                                workFolder = workFolder,
-                                cdmVersion = cdmVersion)
-    
-    runSelfControlledCohort(connectionDetails = connectionDetails,
-                            cdmDatabaseSchema = cdmDatabaseSchema,
-                            oracleTempSchema = oracleTempSchema,
-                            outcomeDatabaseSchema = outcomeDatabaseSchema,
-                            outcomeTable = outcomeTable,
-                            workFolder = workFolder,
-                            cdmVersion = cdmVersion)
-    
-    runIctpd(connectionDetails = connectionDetails,
-             cdmDatabaseSchema = cdmDatabaseSchema,
-             oracleTempSchema = oracleTempSchema,
-             outcomeDatabaseSchema = outcomeDatabaseSchema,
-             outcomeTable = outcomeTable,
-             workFolder = workFolder,
-             cdmVersion = cdmVersion)
-    
-    packageResults(connectionDetails = connectionDetails,
-                   cdmDatabaseSchema = cdmDatabaseSchema,
-                   workFolder = workFolder)
+    # Output folder:
+    outputFolder <- "c:/MethodsLibraryPleEvaluation_ccae"
+
+	execute <- function(connectionDetails = connectionDetails,
+                        cdmDatabaseSchema = cdmDatabaseSchema,
+                        oracleTempSchema = oracleTempSchema,
+                        outcomeDatabaseSchema = outcomeDatabaseSchema,
+                        outcomeTable = outcomeTable,
+                        nestingCohortDatabaseSchema = nestingCohortDatabaseSchema,
+                        nestingCohortTable = nestingCohortTable,
+                        outputFolder = outputFolder,
+                        databaseName = databaseName,
+                        maxCores = maxCores,
+                        cdmVersion = cdmVersion,
+                        createNegativeControlCohorts = TRUE,
+                        synthesizePositiveControls = TRUE,
+                        runCohortMethod = TRUE,
+                        runSelfControlledCaseSeries = TRUE,
+                        runSelfControlledCohort = TRUE,
+                        runCaseControl = TRUE,
+                        runCaseCrossover = TRUE,
+                        packageResults = TRUE)
 	```
 
 	* For details on how to configure```createConnectionDetails``` in your environment type this for help:
-	```r
-	?createConnectionDetails
-	```
+	
+    	```r
+    	?createConnectionDetails
+    	```
 
 	* ```cdmDatabaseSchema``` should specify the schema name where your patient-level data in OMOP CDM format resides. Note that for SQL Server, this should include both the database and schema name, for example 'cdm_data.dbo'.
 
 	* ```oracleTempSchema``` should be used in Oracle to specify a schema where the user has write priviliges for storing temporary tables.
 
-	* ```cdmVersion``` is the version of the CDM. Can be "4" or "5".
+4. You can view the results using a Shiny app:
 
-4. Upload the file ```export/studyResult.zip``` in the output folder to the study coordinator:
     ```r
-    submitResults("c:/temp/study_results/export", key = "<key>", secret = "<secret>")
+    exportFolder <- file.path(outputFolder, "export")
+    MethodEvaluation::launchMethodEvaluationApp(exportFolder)
     ```
-    Where ```key``` and ```secret``` are the credentials provided to you personally by the study coordinator.
-
-Generating figures and tables
-=============================
-
-To locally generate the figures and tables described in the protocol, you can run
-
-```r
-    createFiguresAndTables(folder = "my_folder")
-```
-
-where ```my_folder``` is the path to the folder where the results of the ```createShareableResults``` command were stored.
+   

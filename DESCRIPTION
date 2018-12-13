@@ -1,28 +1,32 @@
 Package: MethodsLibraryPleEvaluation
 Title: Evaluation of Population-Level Estimation Methods
-Version: 0.1.1
+Version: 1.0.0
+Date: 2018-12-12
 Author: Martijn J. Schuemie [aut, cre]
 Maintainer: Martijn J. Schuemie <schuemie@ohdsi.org>
-Description: What the study does (paragraph)
+Description: Implements a study aimed at evaluating the performance of verious methods in the OHDSI methods library.
 Depends:
     R (>= 3.1),
     DatabaseConnector (>= 1.2.1)
 Imports:
     Cyclops,
-    MethodEvaluation (>= 1.0.0),
-    FeatureExtraction (>= 2.0.0),
+    MethodEvaluation,
+    FeatureExtraction,
     CohortMethod,
     SelfControlledCohort,
     SelfControlledCaseSeries,
-    IcTemporalPatternDiscovery,
     CaseControl,
-    CaseCrossover (>= 0.1.0),
+    CaseCrossover,
     EmpiricalCalibration,
-    OhdsiSharing,
     dplyr,
-    tidyr
+    tidyr,
+    ParallelLogger,
+    SqlRender,
+    ffbase, 
+    ggplot2,
+    gridExtra
 Suggests:
     testthat
 License: Apache License 2.0
 LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
