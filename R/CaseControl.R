@@ -83,7 +83,7 @@ createCaseControlSettings <- function(fileName) {
                                                                maxNestingCohortSize = 1e8,
                                                                maxCasesPerOutcome = 1e6)
 
-    selectControlsArgs1 <- CaseControl::createSelectControlsArgs(firstOutcomeOnly = FALSE,
+    selectControlsArgs1 <- CaseControl::createSelectControlsArgs(firstOutcomeOnly = TRUE,
                                                                  washoutPeriod = 365,
                                                                  controlsPerCase = 2,
                                                                  matchOnAge = TRUE,
@@ -96,7 +96,8 @@ createCaseControlSettings <- function(fileName) {
 
     createCaseControlDataArgs1 <- CaseControl::createCreateCaseControlDataArgs(firstExposureOnly = FALSE,
                                                                                riskWindowStart = 0,
-                                                                               riskWindowEnd = 0)
+                                                                               riskWindowEnd = 0,
+                                                                               exposureWashoutPeriod = 365)
 
     fitCaseControlModelArgs1 <-  CaseControl::createFitCaseControlModelArgs()
 
@@ -108,7 +109,7 @@ createCaseControlSettings <- function(fileName) {
                                                  createCaseControlDataArgs = createCaseControlDataArgs1,
                                                  fitCaseControlModelArgs = fitCaseControlModelArgs1)
 
-    selectControlsArgs2 <- CaseControl::createSelectControlsArgs(firstOutcomeOnly = FALSE,
+    selectControlsArgs2 <- CaseControl::createSelectControlsArgs(firstOutcomeOnly = TRUE,
                                                                  washoutPeriod = 365,
                                                                  controlsPerCase = 10,
                                                                  matchOnAge = TRUE,
@@ -130,13 +131,6 @@ createCaseControlSettings <- function(fileName) {
                                                                maxNestingCohortSize = 1e8,
                                                                maxCasesPerOutcome = 1e6)
 
-    # covariateSettings <- FeatureExtraction::createCovariateSettings(useCovariateRiskScores = TRUE,
-    #                                                                 useCovariateRiskScoresCharlson = TRUE,
-    #                                                                 useCovariateRiskScoresDCSI = TRUE,
-    #                                                                 useCovariateRiskScoresCHADS2 = TRUE)
-    #
-    # getDbExposureDataArgs2 <-  CaseControl::createGetDbExposureDataArgs(covariateSettings = covariateSettings)
-
     ccAnalysis3 <- CaseControl::createCcAnalysis(analysisId = 3,
                                                  description = "Nesting in indication, 2 controls per case",
                                                  getDbCaseDataArgs = getDbCaseDataArgs2,
@@ -153,78 +147,6 @@ createCaseControlSettings <- function(fileName) {
                                                  createCaseControlDataArgs = createCaseControlDataArgs1,
                                                  fitCaseControlModelArgs = fitCaseControlModelArgs1)
 
-    # fitCaseControlModelArgs2 <-  CaseControl::createFitCaseControlModelArgs(useCovariates = TRUE,
-    #                                                                         prior = Cyclops::createPrior("none"))
-    #
-    # ccAnalysis5 <- CaseControl::createCcAnalysis(analysisId = 5,
-    #                                              description = "Matching on age and gender, nesting in indication, 2 controls per case, using covars",
-    #                                              getDbCaseDataArgs = getDbCaseDataArgs2,
-    #                                              selectControlsArgs = selectControlsArgs1,
-    #                                              getDbExposureDataArgs = getDbExposureDataArgs2,
-    #                                              createCaseControlDataArgs = createCaseControlDataArgs1,
-    #                                              fitCaseControlModelArgs = fitCaseControlModelArgs2)
-    #
-    # ccAnalysis6 <- CaseControl::createCcAnalysis(analysisId = 6,
-    #                                              description = "Matching on age and gender, nesting in indication, 10 controls per case, using covars",
-    #                                              getDbCaseDataArgs = getDbCaseDataArgs2,
-    #                                              selectControlsArgs = selectControlsArgs2,
-    #                                              getDbExposureDataArgs = getDbExposureDataArgs2,
-    #                                              createCaseControlDataArgs = createCaseControlDataArgs1,
-    #                                              fitCaseControlModelArgs = fitCaseControlModelArgs2)
-
-    # selectControlsArgs3 <- CaseControl::createSelectControlsArgs(firstOutcomeOnly = FALSE,
-    #                                                              washoutPeriod = 365,
-    #                                                              controlsPerCase = 2,
-    #                                                              matchOnAge = TRUE,
-    #                                                              ageCaliper = 2,
-    #                                                              matchOnGender = TRUE,
-    #                                                              matchOnProvider = FALSE,
-    #                                                              matchOnVisitDate = TRUE,
-    #                                                              visitDateCaliper = 30)
-    #
-    # ccAnalysis7 <- CaseControl::createCcAnalysis(analysisId = 7,
-    #                                              description = "Matching on age and gender, nesting in indication, match on visit, 2 controls per case",
-    #                                              getDbCaseDataArgs = getDbCaseDataArgs2,
-    #                                              selectControlsArgs = selectControlsArgs3,
-    #                                              getDbExposureDataArgs = getDbExposureDataArgs2,
-    #                                              createCaseControlDataArgs = createCaseControlDataArgs1,
-    #                                              fitCaseControlModelArgs = fitCaseControlModelArgs1)
-
-    # selectControlsArgs4 <- CaseControl::createSelectControlsArgs(firstOutcomeOnly = FALSE,
-    #                                                              washoutPeriod = 365,
-    #                                                              controlsPerCase = 10,
-    #                                                              matchOnAge = TRUE,
-    #                                                              ageCaliper = 2,
-    #                                                              matchOnGender = TRUE,
-    #                                                              matchOnProvider = FALSE,
-    #                                                              matchOnVisitDate = TRUE,
-    #                                                              visitDateCaliper = 30)
-    #
-    # ccAnalysis8 <- CaseControl::createCcAnalysis(analysisId = 8,
-    #                                              description = "Matching on age and gender, nesting in indication, match on visit, 10 controls per case",
-    #                                              getDbCaseDataArgs = getDbCaseDataArgs2,
-    #                                              selectControlsArgs = selectControlsArgs4,
-    #                                              getDbExposureDataArgs = getDbExposureDataArgs2,
-    #                                              createCaseControlDataArgs = createCaseControlDataArgs1,
-    #                                              fitCaseControlModelArgs = fitCaseControlModelArgs1)
-    #
-    # ccAnalysis9 <- CaseControl::createCcAnalysis(analysisId = 9,
-    #                                              description = "Matching on age and gender, nesting in indication, match on visit, 2 controls per case, using covars",
-    #                                              getDbCaseDataArgs = getDbCaseDataArgs2,
-    #                                              selectControlsArgs = selectControlsArgs3,
-    #                                              getDbExposureDataArgs = getDbExposureDataArgs2,
-    #                                              createCaseControlDataArgs = createCaseControlDataArgs1,
-    #                                              fitCaseControlModelArgs = fitCaseControlModelArgs2)
-    #
-    # ccAnalysis10 <- CaseControl::createCcAnalysis(analysisId = 10,
-    #                                               description = "Matching on age and gender, nesting in indication, match on visit, 10 controls per case, using covars",
-    #                                               getDbCaseDataArgs = getDbCaseDataArgs2,
-    #                                               selectControlsArgs = selectControlsArgs4,
-    #                                               getDbExposureDataArgs = getDbExposureDataArgs2,
-    #                                               createCaseControlDataArgs = createCaseControlDataArgs1,
-    #                                               fitCaseControlModelArgs = fitCaseControlModelArgs2)
-
-    # ccAnalysisList <- list(ccAnalysis1, ccAnalysis3, ccAnalysis4, ccAnalysis5, ccAnalysis6, ccAnalysis7, ccAnalysis8, ccAnalysis9, ccAnalysis10)
     ccAnalysisList <- list(ccAnalysis1, ccAnalysis2, ccAnalysis3, ccAnalysis4)
 
     if (!missing(fileName) && !is.null(fileName)) {

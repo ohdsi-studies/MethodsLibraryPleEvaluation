@@ -1,7 +1,7 @@
 Package: MethodsLibraryPleEvaluation
 Title: Evaluation of Population-Level Estimation Methods
-Version: 1.0.0
-Date: 2018-12-12
+Version: 1.0.1
+Date: 2019-04-17
 Author: Martijn J. Schuemie [aut, cre]
 Maintainer: Martijn J. Schuemie <schuemie@ohdsi.org>
 Description: Implements a study aimed at evaluating the performance of verious methods in the OHDSI methods library.

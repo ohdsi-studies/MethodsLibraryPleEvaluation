@@ -17,7 +17,7 @@ How to run
     install_github("ohdsi/EmpiricalCalibration", ref = "v1.4.0")
     install_github("ohdsi/CohortMethod", ref = "v3.0.1")
     install_github("ohdsi/SelfControlledCaseSeries", ref = "v1.4.0")
-    install_github("ohdsi/CaseControl", ref = "v1.5.0")
+    install_github("ohdsi/CaseControl", ref = "v1.6.0")
     install_github("ohdsi/SelfControlledCohort", ref = "v1.5.0")
     install_github("ohdsi/CaseCrossover", ref = "v1.1.0")
     install_github("ohdsi/MethodEvaluation", ref = "v1.0.0")

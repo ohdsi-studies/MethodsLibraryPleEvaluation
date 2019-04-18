@@ -15,7 +15,7 @@
 # limitations under the License.
 
 library(MethodsLibraryPleEvaluation)
-options('fftempdir' = 'r:/fftemp')
+options('fftempdir' = 's:/fftemp')
 
 dbms <- "pdw"
 user <- NULL
@@ -89,7 +89,7 @@ outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_jmdc"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_jmdc"
-outputFolder <- "r:/MethodsLibraryPleEvaluation_jmdc"
+outputFolder <- "s:/MethodsLibraryPleEvaluation_jmdc"
 exposureDatabaseSchema <- cdmDatabaseSchema
 exposureTable = "drug_era"
 exportFolder <- file.path(outputFolder, "export")
@@ -127,3 +127,38 @@ metrics <- MethodEvaluation::computeOhdsiBenchmarkMetrics(exportFolder = exportF
 write.csv(metrics, file.path(outputFolder, sprintf("metrics_calibrated_%s.csv", databaseName)), row.names = FALSE)
 
 
+
+# Rerun case-control ---------------------------------------------------------------
+filesToDelete <- list.files(file.path(outputFolder, "caseControl"), "exposureData_.*", include.dirs = TRUE, full.names = TRUE)
+unlink(filesToDelete, recursive = TRUE)
+
+filesToDelete <- list.files(file.path(outputFolder, "caseControl"), "ccd_*", include.dirs = FALSE, full.names = TRUE)
+unlink(filesToDelete)
+
+filesToDelete <- list.files(file.path(outputFolder, "caseControl"), "Analysis_*", include.dirs = TRUE, full.names = TRUE)
+unlink(filesToDelete, recursive = TRUE)
+
+unlink(file.path(outputFolder, "ccSummary.rds"))
+
+
+execute(connectionDetails = connectionDetails,
+        cdmDatabaseSchema = cdmDatabaseSchema,
+        oracleTempSchema = oracleTempSchema,
+        outcomeDatabaseSchema = outcomeDatabaseSchema,
+        outcomeTable = outcomeTable,
+        nestingCohortDatabaseSchema = nestingCohortDatabaseSchema,
+        nestingCohortTable = nestingCohortTable,
+        exposureDatabaseSchema = exposureDatabaseSchema,
+        exposureTable = exposureTable,
+        outputFolder = outputFolder,
+        databaseName = databaseName,
+        maxCores = maxCores,
+        cdmVersion = cdmVersion,
+        createNegativeControlCohorts = FALSE,
+        synthesizePositiveControls = FALSE,
+        runCohortMethod = FALSE,
+        runSelfControlledCaseSeries = FALSE,
+        runSelfControlledCohort = FALSE,
+        runCaseControl = TRUE,
+        runCaseCrossover = FALSE,
+        packageResults = TRUE)
