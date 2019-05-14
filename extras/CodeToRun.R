@@ -50,7 +50,7 @@ outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_ccae"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_ccae"
-outputFolder <- "r:/MethodsLibraryPleEvaluation_ccae"
+outputFolder <- "s:/MethodsLibraryPleEvaluation_ccae"
 exposureDatabaseSchema <- cdmDatabaseSchema
 exposureTable = "drug_era"
 exportFolder <- file.path(outputFolder, "export")
@@ -63,7 +63,7 @@ outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_panther"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_panther"
-outputFolder <- "r:/MethodsLibraryPleEvaluation_panther"
+outputFolder <- "s:/MethodsLibraryPleEvaluation_panther"
 exposureDatabaseSchema <- "scratch.dbo"
 exposureTable = "mschuemi_ohdsi_exposure_panther"
 exportFolder <- file.path(outputFolder, "export")
@@ -76,7 +76,7 @@ outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_mdcr"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_mdcr"
-outputFolder <- "r:/MethodsLibraryPleEvaluation_mdcr"
+outputFolder <- "s:/MethodsLibraryPleEvaluation_mdcr"
 exposureDatabaseSchema <- cdmDatabaseSchema
 exposureTable = "drug_era"
 exportFolder <- file.path(outputFolder, "export")
@@ -159,6 +159,6 @@ execute(connectionDetails = connectionDetails,
         runCohortMethod = FALSE,
         runSelfControlledCaseSeries = FALSE,
         runSelfControlledCohort = FALSE,
-        runCaseControl = TRUE,
+        runCaseControl = FALSE,
         runCaseCrossover = FALSE,
         packageResults = TRUE)
