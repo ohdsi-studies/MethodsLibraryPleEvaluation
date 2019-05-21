@@ -942,4 +942,5 @@ plotDbCharacteristics <- function(rootOutputFolderName = "MethodsLibraryPleEvalu
                                     heights = c(80, 400),
                                     respect = FALSE)
     ggplot2::ggsave(filename = file.path(exportFolders[1], "DbOverview.png"), plot = plot, width = 10, height = 5.5, dpi = 400)
+
 }
