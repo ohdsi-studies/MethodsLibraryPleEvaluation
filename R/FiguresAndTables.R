@@ -504,7 +504,36 @@ scatterPlots <- function(exportFolder) {
     ggplot2::ggsave(file.path(outputFolder, "exampleEffectsNcs.png"), plot, width = 8, height = 4, dpi = 300)
 }
 
-createTableWithAllEstimates <- function(rootOutputFolderName = "MethodsLibraryPleEvaluation_", rootFolder = "r:") {
+orderMetricsTables <- function(rootOutputFolderName = "MethodsLibraryPleEvaluation_", rootFolder = "s:") {
+    outputFolders <- list.files(rootFolder, rootOutputFolderName)
+
+    reorder <- function(metrics) {
+        methods <- c("CohortMethod", "SelfControlledCohort", "CaseControl", "CaseCrossover", "SelfControlledCaseSeries")
+        dummy <- metrics[1:5, ]
+        dummy[, 4:ncol(dummy)] <- NA
+        dummy$method <- methods
+        dummy$analysisId <- 0
+        metrics <- rbind(metrics, dummy)
+        methodOrder <- data.frame(method = methods,
+                                  methodOrder = 1:5)
+        metrics <- merge(metrics, methodOrder)
+        metrics <- metrics[order(metrics$methodOrder, metrics$analysisId), ]
+        metrics$methodOrder <- NULL
+        return(metrics)
+    }
+    for (outputFolder in outputFolders) {
+        database <- gsub(rootOutputFolderName, "", outputFolder)
+        metrics <- read.csv(file.path(rootFolder, outputFolder, sprintf("metrics_%s.csv", database)))
+        metrics <- reorder(metrics)
+        write.csv(metrics, file.path(rootFolder, outputFolder, sprintf("metrics_reordered__%s.csv", database)), row.names = FALSE, na = "")
+
+        metrics <- read.csv(file.path(rootFolder, outputFolder, sprintf("metrics_calibrated_%s.csv", database)))
+        metrics <- reorder(metrics)
+        write.csv(metrics, file.path(rootFolder, outputFolder, sprintf("metrics_calibrated_reordered__%s.csv", database)), row.names = FALSE, na = "")
+    }
+}
+
+createTableWithAllEstimates <- function(rootOutputFolderName = "MethodsLibraryPleEvaluation_", rootFolder = "s:") {
     outputFolders <- list.files(rootFolder, rootOutputFolderName)
     loadEstimates <- function(outputFolder) {
         exportFolder <- file.path(rootFolder, outputFolder, "export")
@@ -547,4 +576,123 @@ createTableWithAllEstimates <- function(rootOutputFolderName = "MethodsLibraryPl
                                "calCi95Ub",
                                "calP")]
     write.csv(estimates, file.path(rootFolder, outputFolders[1], "allEstimates.csv"), row.names = FALSE)
+}
+
+perStrataMetrics <- function(exportFolder) {
+    # # Big table (not popular amongst co-authors:
+    # library(MethodEvaluation)
+    # data(ohdsiNegativeControls)
+    # strata <- c(unique(ohdsiNegativeControls$outcomeName[ohdsiNegativeControls$type == "Exposure control"]),
+    #             unique(ohdsiNegativeControls$targetName[ohdsiNegativeControls$type == "Outcome control"]),
+    #             "All")
+    # reference <- MethodEvaluation::computeOhdsiBenchmarkMetrics(exportFolder = exportFolder, calibrated = FALSE)
+    # computeKeyMetrics <- function(stratum) {
+    #     metrics <- MethodEvaluation::computeOhdsiBenchmarkMetrics(exportFolder = exportFolder, calibrated = FALSE, stratum = stratum)
+    #     caliMetrics <- MethodEvaluation::computeOhdsiBenchmarkMetrics(exportFolder = exportFolder, calibrated = TRUE, stratum = stratum)
+    #     selectMetrics <- data.frame(auc = metrics$auc,
+    #                                 precision = caliMetrics$meanP)
+    #     colnames(selectMetrics) <- paste(stratum, colnames(selectMetrics), sep = "_")
+    #     return(selectMetrics)
+    # }
+    # metrics <- lapply(strata, computeKeyMetrics)
+    # metrics <- do.call("cbind", metrics)
+    # metrics <- cbind(reference[, 2:4], metrics)
+    # write.csv(metrics, file.path(exportFolder, "keyMetricsPerStrata.csv"), row.names = FALSE)
+
+
+    # Create plot using Shiny app structure:
+    shinySettings <- list(exportFolder = "C:/Users/mschuemi/git/ShinyDeploy/MethodEvalViewer/data")
+    source("C:/Users/mschuemi/git/ShinyDeploy/MethodEvalViewer/global.R")
+    calibrated <- "Calibrated"
+    metric = "Mean precision"
+    # metric = "AUC"
+    computeMetrics <- function(forEval, metric = "Mean precision") {
+        if (metric == "AUC")
+            y <- round(pROC::auc(pROC::roc(forEval$targetEffectSize > 1, forEval$logRr, algorithm = 3)), 2)
+        else if (metric == "Coverage")
+            y <- round(mean(forEval$ci95Lb < forEval$trueEffectSize & forEval$ci95Ub > forEval$trueEffectSize), 2)
+        else if (metric == "Mean precision")
+            y <- round(-1 + exp(mean(log(1 + (1/(forEval$seLogRr^2))))), 2)
+        else if (metric == "Mean squared error (MSE)")
+            y <- round(mean((forEval$logRr - log(forEval$trueEffectSize))^2), 2)
+        else if (metric == "Type I error")
+            y <- round(mean(forEval$p[forEval$targetEffectSize == 1] < 0.05), 2)
+        else if (metric == "Type II error")
+            y <- round(mean(forEval$p[forEval$targetEffectSize > 1] >= 0.05), 2)
+        else if (metric == "Non-estimable")
+            y <- round(mean(forEval$seLogRr >= 99), 2)
+        return(data.frame(database = forEval$database[1],
+                          method = forEval$method[1],
+                          analysisId = forEval$analysisId[1],
+                          stratum = forEval$stratum[1],
+                          y = y))
+    }
+    subset <- estimates[!is.na(estimates$mdrrTarget) & estimates$mdrrTarget <= 1.25, ]
+    if (calibrated == "Calibrated") {
+        subset$logRr <- subset$calLogRr
+        subset$seLogRr <- subset$calSeLogRr
+        subset$ci95Lb <- subset$calCi95Lb
+        subset$ci95Ub <- subset$calCi95Ub
+        subset$p <- subset$calP
+    }
+
+    groups <- split(subset, paste(subset$method, subset$analysisId, subset$database, subset$stratum))
+    metrics <- lapply(groups, computeMetrics, metric = metric)
+    metrics <- do.call("rbind", metrics)
+    strataSubset <- strata[strata != "All"]
+    strataSubset <- data.frame(stratum = strataSubset,
+                               x = 1:length(strataSubset),
+                               stringsAsFactors = FALSE)
+    metrics <- merge(metrics, strataSubset)
+    methods <- unique(metrics$method)
+    methods <- methods[order(methods)]
+    n <- length(methods)
+    methods <- data.frame(method = methods,
+                          offsetX = ((1:n / (n + 1)) - ((n + 1) / 2) / (n + 1)))
+    metrics <- merge(metrics, methods)
+    metrics$x <- metrics$x + metrics$offsetX
+    metrics$stratum <- as.character(metrics$stratum)
+    metrics$stratum[metrics$stratum == "Inflammatory Bowel Disease"] <- "IBD"
+    metrics$stratum[metrics$stratum == "Acute pancreatitis"] <- "Acute\npancreatitis"
+    strataSubset$stratum <- as.character(strataSubset$stratum)
+    strataSubset$stratum[strataSubset$stratum == "Inflammatory Bowel Disease"] <- "IBD"
+    strataSubset$stratum[strataSubset$stratum == "Acute pancreatitis"] <- "Acute\npancreatitis"
+    metrics$method <- as.character(metrics$method)
+    metrics$method[metrics$method == "CaseControl"] <- "Case-control"
+    metrics$method[metrics$method == "CaseCrossover"] <- "Case-crossover"
+    metrics$method[metrics$method == "CohortMethod"] <- "Cohort method"
+    metrics$method[metrics$method == "SelfControlledCaseSeries"] <- "Self-controlled case series (SCCS)"
+    metrics$method[metrics$method == "SelfControlledCohort"] <- "Self-controlled cohort (SCC)"
+    metrics <- metrics[metrics$y != 0, ]
+
+    fiveColors <- c(
+        "#781C86",
+        "#83BA70",
+        "#D3AE4E",
+        "#547BD3",
+        "#DF4327"
+    )
+
+
+    yLabel <- paste0(metric, if (calibrated == "Calibrated") " after empirical calibration" else "")
+    point <- scales::format_format(big.mark = " ", decimal.mark = ".", scientific = FALSE)
+    plot <- ggplot2::ggplot(metrics, ggplot2::aes(x = x, y = y, color = method)) +
+        ggplot2::geom_vline(xintercept = 0.5 + 0:(nrow(strataSubset) - 1), linetype = "dashed") +
+        ggplot2::geom_point(size = 2.5, alpha = 0.5, shape = 16) +
+        ggplot2::scale_colour_manual(values = fiveColors) +
+        ggplot2::scale_x_continuous("Stratum", breaks = strataSubset$x, labels = strataSubset$stratum) +
+        ggplot2::facet_grid(database~., scales = "free_y") +
+        ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+              panel.background = ggplot2::element_rect(fill = "#F0F0F0F0", colour = NA),
+              panel.grid.major.x = ggplot2::element_blank(),
+              panel.grid.major.y = ggplot2::element_line(colour = "#CCCCCC"),
+              axis.ticks = ggplot2::element_blank(),
+              legend.position = "top",
+              legend.title = ggplot2::element_blank())
+    if (metric %in% c("Mean precision", "Mean squared error (MSE)")) {
+        plot <- plot + ggplot2::scale_y_log10(yLabel, labels = point)
+    } else {
+        plot <- plot + ggplot2::scale_y_continuous(yLabel, labels = point)
+    }
+    ggplot2::ggsave(filename = file.path(exportFolder, "PrecisionPerStrata.png"), plot = plot, width = 7.5, height = 7)
 }
