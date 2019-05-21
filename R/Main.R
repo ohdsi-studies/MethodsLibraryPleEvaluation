@@ -64,6 +64,7 @@
 #' @param runSelfControlledCohort                     Perform the SCC analyses?
 #' @param runCaseControl                     Perform the case-control analyses?
 #' @param runCaseCrossover       Perform the case-crossover analyses?
+#' @param createCharacterization       Create a general characterization of the database population?
 #' @param packageResults       Should results be packaged for later sharing and viewing?
 #'
 #' @export
@@ -88,6 +89,7 @@ execute <- function(connectionDetails,
                     runSelfControlledCohort = TRUE,
                     runCaseControl = TRUE,
                     runCaseCrossover = TRUE,
+                    createCharacterization = TRUE,
                     packageResults = TRUE) {
     if (!file.exists(outputFolder)) {
         dir.create(outputFolder, recursive = TRUE)
@@ -198,6 +200,16 @@ execute <- function(connectionDetails,
                          outputFolder = outputFolder,
                          cdmVersion = cdmVersion,
                          maxCores = cdmVersion)
+    }
+
+    if (createCharacterization) {
+        ParallelLogger::logInfo("Creating characterization")
+        createGeneralCharacterization(connectionDetails = connectionDetails,
+                                      cdmDatabaseSchema = cdmDatabaseSchema,
+                                      oracleTempSchema = oracleTempSchema,
+                                      exportFolder = file.path(outputFolder, "export"),
+                                      databaseId = databaseName,
+                                      cdmVersion = cdmVersion)
     }
 
     if (packageResults) {

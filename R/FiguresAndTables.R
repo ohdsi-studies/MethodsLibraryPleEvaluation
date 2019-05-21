@@ -369,7 +369,7 @@ getControlStats <- function(outputFolder, exportFolder) {
         header <- as.data.frame(t(header), stringsAsFactors = FALSE)
         colnames(stats) <- colnames(header)
         for (i in 1:ncol(stats)) {
-           stats[, i] <- as.character(stats[, i])
+            stats[, i] <- as.character(stats[, i])
         }
         emptyRow <- header
         emptyRow[1, ] <- ""
@@ -683,16 +683,263 @@ perStrataMetrics <- function(exportFolder) {
         ggplot2::scale_x_continuous("Stratum", breaks = strataSubset$x, labels = strataSubset$stratum) +
         ggplot2::facet_grid(database~., scales = "free_y") +
         ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
-              panel.background = ggplot2::element_rect(fill = "#F0F0F0F0", colour = NA),
-              panel.grid.major.x = ggplot2::element_blank(),
-              panel.grid.major.y = ggplot2::element_line(colour = "#CCCCCC"),
-              axis.ticks = ggplot2::element_blank(),
-              legend.position = "top",
-              legend.title = ggplot2::element_blank())
+                       panel.background = ggplot2::element_rect(fill = "#F0F0F0F0", colour = NA),
+                       panel.grid.major.x = ggplot2::element_blank(),
+                       panel.grid.major.y = ggplot2::element_line(colour = "#CCCCCC"),
+                       axis.ticks = ggplot2::element_blank(),
+                       legend.position = "top",
+                       legend.title = ggplot2::element_blank())
     if (metric %in% c("Mean precision", "Mean squared error (MSE)")) {
         plot <- plot + ggplot2::scale_y_log10(yLabel, labels = point)
     } else {
         plot <- plot + ggplot2::scale_y_continuous(yLabel, labels = point)
     }
     ggplot2::ggsave(filename = file.path(exportFolder, "PrecisionPerStrata.png"), plot = plot, width = 7.5, height = 7)
+}
+
+plotDbCharacteristics <- function(rootOutputFolderName = "MethodsLibraryPleEvaluation_", rootFolder = "s:/") {
+    outputFolders <- list.files(path = rootFolder, pattern = rootOutputFolderName, full.names = TRUE)
+    exportFolders <- sapply(outputFolders, file.path, "export")
+    loadData <- function(tableName, exportFolders) {
+        loadDataFromFolder <- function(exportFolder, tableName) {
+            fileName <- list.files(exportFolder, tableName, full.names = TRUE)
+            data <- read.csv(fileName, stringsAsFactors = FALSE)
+            return(data)
+        }
+        data <- lapply(exportFolders, loadDataFromFolder, tableName = tableName)
+        data <- do.call("rbind", data)
+        colnames(data) <- SqlRender::snakeCaseToCamelCase(colnames(data))
+        return(data)
+    }
+    populationCount <- loadData("population_count", exportFolders)
+    observationDuration <- loadData("observation_duration", exportFolders)
+    gender <- loadData("gender", exportFolders)
+    visitType <- loadData("visit_type", exportFolders)
+    ageObserved <- loadData("age", exportFolders)
+    calendarYearObserved <- loadData("calendar_year_observed", exportFolders)
+
+    # barChartTheme <- ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+    #                                 panel.background = ggplot2::element_blank(),
+    #                                 panel.grid.major.y = ggplot2::element_blank(),
+    #                                 panel.grid.major.x = ggplot2::element_line(colour = "#AAAAAA"),
+    #                                 axis.ticks = ggplot2::element_blank(),
+    #                                 axis.text.y = ggplot2::element_blank(),
+    #                                 axis.title.y = ggplot2::element_blank(),
+    #                                 strip.background = ggplot2::element_blank())
+    #
+    # pieChartTheme <- ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+    #                                 panel.background = ggplot2::element_blank(),
+    #                                 panel.grid.major = ggplot2::element_blank(),
+    #                                 axis.ticks = ggplot2::element_blank(),
+    #                                 axis.text = ggplot2::element_blank(),
+    #                                 axis.title.y = ggplot2::element_blank(),
+    #                                 strip.background = ggplot2::element_blank(),
+    #                                 legend.position = "none")
+    #
+    # populationCount$label <- sprintf("Persons: %.2fM", populationCount$subjectCount / 1e6)
+    # plot1 <- ggplot2::ggplot(populationCount) +
+    #     ggplot2::geom_text(ggplot2::aes(label = label), x = 0, y = 0.5, hjust = 0) +
+    #     ggplot2::facet_grid(~databaseId) +
+    #     barChartTheme
+    #
+    # totals <- aggregate(subjectCount ~ databaseId, observationDuration, max)
+    # observationDuration <- merge(observationDuration, data.frame(databaseId = totals$databaseId, total = totals$subjectCount))
+    # observationDuration$fraction <- observationDuration$subjectCount / observationDuration$total
+    # plot2 <- ggplot2::ggplot(observationDuration, ggplot2::aes(x = observationYears, y = fraction)) +
+    #     ggplot2::geom_bar(stat = "identity", color = rgb(0,0,0, alpha = 0), fill = "#4C90C0", alpha = 0.8, width = 1) +
+    #     ggplot2::geom_hline(yintercept = 0) +
+    #     ggplot2::facet_grid(~databaseId) +
+    #     ggplot2::xlab("Observation duration (years)") +
+    #     ggplot2::ylab("Persons") +
+    #     barChartTheme
+    #
+    #
+    # gender <- merge(gender, data.frame(databaseId = populationCount$databaseId, total = populationCount$subjectCount))
+    # gender$fraction <- gender$subjectCount / gender$total
+    # plot3 <- ggplot2::ggplot(gender, ggplot2::aes(x = "", y = fraction, color = gender, fill = gender)) +
+    #     ggplot2::geom_bar(stat = "identity", color = rgb(0,0,0, alpha = 0), alpha = 0.7) +
+    #     ggplot2::coord_polar("y", start = 0) +
+    #     ggplot2::scale_fill_manual(values = c("#DF4327", "#4C90C0", "#CEB541")) +
+    #     ggplot2::facet_grid(~databaseId) +
+    #     ggplot2::ylab("Gender") +
+    #     pieChartTheme
+    #
+    #
+    # totals <- aggregate(visitCount ~ databaseId, visitType, sum)
+    # visitType <- merge(visitType, data.frame(databaseId = totals$databaseId, total = totals$visitCount))
+    # visitType$fraction <- visitType$visitCount / visitType$total
+    # visitType <- visitType[visitType$fraction > 0.01, ]
+    # plot4 <- ggplot2::ggplot(visitType, ggplot2::aes(x = "", y = fraction, color = visitType, fill = visitType)) +
+    #     ggplot2::geom_bar(stat = "identity", color = rgb(0,0,0, alpha = 0), alpha = 0.7) +
+    #     ggplot2::coord_polar("y", start = 0) +
+    #     ggplot2::scale_fill_manual(values = c("#CEB541", "#DF4327", "#4C90C0")) +
+    #     ggplot2::facet_grid(~databaseId) +
+    #     ggplot2::ylab("Visit type") +
+    #     pieChartTheme
+    #
+    # totals <- aggregate(subjectCount ~ databaseId, ageObserved, max)
+    # ageObserved <- merge(ageObserved, data.frame(databaseId = totals$databaseId, total = totals$subjectCount))
+    # ageObserved$fraction <- ageObserved$subjectCount / ageObserved$total
+    # plot5 <- ggplot2::ggplot(ageObserved, ggplot2::aes(x = age, y = fraction)) +
+    #     ggplot2::geom_bar(stat = "identity", color = rgb(0,0,0, alpha = 0), fill = "#4C90C0", alpha = 0.8, width = 1) +
+    #     ggplot2::geom_hline(yintercept = 0) +
+    #     ggplot2::facet_grid(~databaseId) +
+    #     ggplot2::xlab("Observed age (years)") +
+    #     ggplot2::ylab("Persons") +
+    #     ggplot2::xlim(c(0,100)) +
+    #     barChartTheme
+    #
+    # totals <- aggregate(subjectCount ~ databaseId, calendarYearObserved, max)
+    # calendarYearObserved <- merge(calendarYearObserved, data.frame(databaseId = totals$databaseId, total = totals$subjectCount))
+    # calendarYearObserved$fraction <- calendarYearObserved$subjectCount / calendarYearObserved$total
+    # plot6 <- ggplot2::ggplot(calendarYearObserved, ggplot2::aes(x = calendarYear, y = fraction)) +
+    #     ggplot2::geom_bar(stat = "identity", color = rgb(0,0,0, alpha = 0), fill = "#4C90C0", alpha = 0.8, width = 1) +
+    #     ggplot2::geom_hline(yintercept = 0) +
+    #     ggplot2::facet_grid(~databaseId) +
+    #     ggplot2::xlab("Observed calendar year") +
+    #     ggplot2::ylab("Persons") +
+    #     barChartTheme
+    #
+    #
+    # noStrip <- ggplot2::theme(strip.text = ggplot2::element_blank())
+    # gridExtra::grid.arrange(plot1, plot2 + noStrip, plot3  + noStrip, plot4  + noStrip, plot5  + noStrip, plot6 + noStrip,
+    #                         ncol = 1, nrow = 6, heights = c(140, 200, 250, 250, 200, 200),
+    #                         widths = 400,
+    #                         respect = FALSE)
+    #
+    # plots <- list(plot1, plot2, plot3, plot4, plot5, plot6)
+    # grobs <- widths <- list()
+    # for (i in 1:length(plots)) {
+    #     grobs[[i]] <- ggplot2::ggplotGrob(plots[[i]])
+    #     widths[[i]] <- grobs[[i]]$widths[2:5]
+    # }
+    # maxwidth <- do.call(grid::unit.pmax, widths)
+    # for (i in 1:length(grobs)) {
+    #     grobs[[i]]$widths[2:5] <- as.list(maxwidth)
+    # }
+    # gridExtra::grid.arrange(grobs[[1]], grobs[[2]], grobs[[3]], grobs[[4]], grobs[[5]], grobs[[6]], heights = c(100, 200, 200, 200, 200, 200))
+    #
+    # grabLegend <- function(a.gplot){
+    #     tmp <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(a.gplot))
+    #     leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+    #     legend <- tmp$grobs[[leg]]
+    #     return(legend)}
+    #
+    # mylegend <- grabLegend(plot1)
+    #
+    # plot <- gridExtra::grid.arrange(plot1 + ggplot2::theme(legend.position = "none",
+    #                                                        axis.title.x = ggplot2::element_blank(),
+    #                                                        axis.text.x = ggplot2::element_blank()),
+    #                                 grid::textGrob("Heart failure", rot = -90),
+    #                                 plot2 + ggplot2::theme(legend.position = "none",
+    #                                                        axis.title.x = ggplot2::element_blank(),
+    #                                                        axis.text.x = ggplot2::element_blank(),
+    #                                                        strip.text.x = ggplot2::element_blank()),
+    #                                 grid::textGrob("Myocardial infarction", rot = -90),
+    #                                 plot3 + ggplot2::theme(legend.position = "none",
+    #                                                        strip.text.x = ggplot2::element_blank()),
+    #                                 grid::textGrob("Stroke", rot = -90),
+    #                                 mylegend,
+    #                                 grid::textGrob(""),
+    #                                 ncol = 2,
+    #                                 widths = c(100, 3),
+    #                                 heights = c(100, 85, 105, 80))
+    #
+    # multiplot(plot1, plot2, plot3, plot4, plot5, plot6, cols=1)
+
+    # transpose
+
+    barChartTheme <- ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+                                    panel.background = ggplot2::element_blank(),
+                                    panel.grid.major.y = ggplot2::element_blank(),
+                                    panel.grid.major.x = ggplot2::element_line(colour = "#AAAAAA"),
+                                    axis.ticks = ggplot2::element_blank(),
+                                    axis.text.y = ggplot2::element_blank(),
+                                    axis.title.y = ggplot2::element_blank(),
+                                    strip.background = ggplot2::element_blank())
+
+    pieChartTheme <- ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+                                    panel.background = ggplot2::element_blank(),
+                                    panel.grid.major = ggplot2::element_blank(),
+                                    axis.ticks = ggplot2::element_blank(),
+                                    axis.text = ggplot2::element_blank(),
+                                    axis.title.y = ggplot2::element_blank(),
+                                    strip.background = ggplot2::element_blank(),
+                                    legend.title = ggplot2::element_blank())
+
+    firstup <- function(x) {
+        x <- tolower(x)
+        substr(x, 1, 1) <- toupper(substr(x, 1, 1))
+        return(paste0(" ", x))
+    }
+
+    plot2 <- ggplot2::ggplot(observationDuration, ggplot2::aes(x = observationYears, y = subjectCount)) +
+        ggplot2::geom_bar(stat = "identity", color = rgb(0,0,0, alpha = 0), fill = "#4C90C0", alpha = 0.8, width = 1) +
+        ggplot2::geom_hline(yintercept = 0) +
+        ggplot2::facet_grid(databaseId~., scales = "free_y") +
+        ggplot2::xlab("Observation duration (years)") +
+        ggplot2::ylab("Persons") +
+        barChartTheme
+
+    gender <- merge(gender, data.frame(databaseId = populationCount$databaseId, total = populationCount$subjectCount))
+    gender$fraction <- gender$subjectCount / gender$total
+    gender$gender <- sapply(gender$gender, firstup)
+    plot3 <- ggplot2::ggplot(gender, ggplot2::aes(x = "", y = fraction, color = gender, fill = gender)) +
+        ggplot2::geom_bar(stat = "identity", color = rgb(0,0,0, alpha = 0), alpha = 0.7) +
+        ggplot2::coord_polar("y", start = 0) +
+        ggplot2::scale_fill_manual(values = c("#DF4327", "#4C90C0", "#CEB541")) +
+        ggplot2::facet_grid(databaseId~.) +
+        ggplot2::ylab("Gender") +
+        pieChartTheme
+
+    totals <- aggregate(visitCount ~ databaseId, visitType, sum)
+    visitType <- merge(visitType, data.frame(databaseId = totals$databaseId, total = totals$visitCount))
+    visitType$fraction <- visitType$visitCount / visitType$total
+    visitType <- visitType[visitType$fraction > 0.01, ]
+    visitType$visitType <- sapply(visitType$visitType, firstup)
+    plot4 <- ggplot2::ggplot(visitType, ggplot2::aes(x = "", y = fraction, color = visitType, fill = visitType)) +
+        ggplot2::geom_bar(stat = "identity", color = rgb(0,0,0, alpha = 0), alpha = 0.7) +
+        ggplot2::coord_polar("y", start = 0) +
+        ggplot2::scale_fill_manual(values = c("#CEB541", "#DF4327", "#4C90C0")) +
+        ggplot2::facet_grid(databaseId~.) +
+        ggplot2::ylab("Visit type") +
+        pieChartTheme
+
+    plot5 <- ggplot2::ggplot(ageObserved, ggplot2::aes(x = age, y = subjectCount)) +
+        ggplot2::geom_bar(stat = "identity", color = rgb(0,0,0, alpha = 0), fill = "#4C90C0", alpha = 0.8, width = 1) +
+        ggplot2::geom_hline(yintercept = 0) +
+        ggplot2::facet_grid(databaseId~., scales = "free_y") +
+        ggplot2::xlab("Observed age (years)") +
+        ggplot2::ylab("Persons") +
+        ggplot2::xlim(c(0,100)) +
+        barChartTheme
+
+    populationCount$label <- sprintf("%.1fM persons", populationCount$subjectCount / 1e6)
+    calendarYearObserved <- merge(calendarYearObserved, data.frame(databaseId = populationCount$databaseId, label = populationCount$label))
+    calendarYearObserved$databaseId <- paste(calendarYearObserved$databaseId, calendarYearObserved$label, sep = "\n")
+    plot6 <- ggplot2::ggplot(calendarYearObserved, ggplot2::aes(x = calendarYear, y = subjectCount)) +
+        ggplot2::geom_bar(stat = "identity", color = rgb(0,0,0, alpha = 0), fill = "#4C90C0", alpha = 0.8, width = 1) +
+        ggplot2::geom_hline(yintercept = 0) +
+        ggplot2::facet_grid(databaseId~., scales = "free_y") +
+        ggplot2::xlab("Observed calendar year") +
+        ggplot2::ylab("Persons") +
+        barChartTheme
+
+    grabLegend <- function(a.gplot){
+        tmp <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(a.gplot))
+        leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+        legend <- tmp$grobs[[leg]]
+        return(legend)}
+
+    legend3 <- grabLegend(plot3)
+    legend4 <- grabLegend(plot4)
+
+    noStrip <- ggplot2::theme(strip.text = ggplot2::element_blank(),
+                              legend.position = "none")
+    plot <- gridExtra::grid.arrange(grid::textGrob(""), legend3, grid::textGrob(""), legend4, grid::textGrob(""),
+                                    plot2 + noStrip, plot3  + noStrip, plot5  + noStrip, plot4  + noStrip, plot6,
+                                    ncol = 5, nrow = 2, widths = c(200, 120, 200, 120, 200),
+                                    heights = c(80, 400),
+                                    respect = FALSE)
+    ggplot2::ggsave(filename = file.path(exportFolders[1], "DbOverview.png"), plot = plot, width = 10, height = 5.5, dpi = 400)
 }
