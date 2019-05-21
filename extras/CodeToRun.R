@@ -15,7 +15,7 @@
 # limitations under the License.
 
 library(MethodsLibraryPleEvaluation)
-options('fftempdir' = 's:/fftemp')
+options('fftempdir' = 'c:/fftemp')
 
 dbms <- "pdw"
 user <- NULL
@@ -50,7 +50,7 @@ outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_ccae"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_ccae"
-outputFolder <- "s:/MethodsLibraryPleEvaluation_ccae"
+outputFolder <- "c:/MethodsLibraryPleEvaluation_ccae"
 exposureDatabaseSchema <- cdmDatabaseSchema
 exposureTable = "drug_era"
 exportFolder <- file.path(outputFolder, "export")
@@ -63,7 +63,7 @@ outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_panther"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_panther"
-outputFolder <- "s:/MethodsLibraryPleEvaluation_panther"
+outputFolder <- "c:/MethodsLibraryPleEvaluation_panther"
 exposureDatabaseSchema <- "scratch.dbo"
 exposureTable = "mschuemi_ohdsi_exposure_panther"
 exportFolder <- file.path(outputFolder, "export")
@@ -76,7 +76,7 @@ outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_mdcr"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_mdcr"
-outputFolder <- "s:/MethodsLibraryPleEvaluation_mdcr"
+outputFolder <- "c:/MethodsLibraryPleEvaluation_mdcr"
 exposureDatabaseSchema <- cdmDatabaseSchema
 exposureTable = "drug_era"
 exportFolder <- file.path(outputFolder, "export")
@@ -89,7 +89,7 @@ outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_jmdc"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_jmdc"
-outputFolder <- "s:/MethodsLibraryPleEvaluation_jmdc"
+outputFolder <- "c:/MethodsLibraryPleEvaluation_jmdc"
 exposureDatabaseSchema <- cdmDatabaseSchema
 exposureTable = "drug_era"
 exportFolder <- file.path(outputFolder, "export")
@@ -117,7 +117,8 @@ execute(connectionDetails = connectionDetails,
         runSelfControlledCohort = FALSE,
         runCaseControl = FALSE,
         runCaseCrossover = FALSE,
-        packageResults = TRUE)
+        createCharacterization = TRUE,
+        packageResults = FALSE)
 
 
 MethodEvaluation::launchMethodEvaluationApp(exportFolder)
