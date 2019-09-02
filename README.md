@@ -30,7 +30,7 @@ How to run
     install_github("ohdsi/SelfControlledCohort", ref = "v1.5.0")
     install_github("ohdsi/CaseCrossover", ref = "v1.1.0")
     install_github("ohdsi/MethodEvaluation", ref = "v1.0.0")
-	install_github("schuemie/MethodsLibraryPleEvaluation")
+	install_github("ohdsi-studies/MethodsLibraryPleEvaluation")
 	```
 
 3. Once installed, you can execute the study by modifying and using the following code:
