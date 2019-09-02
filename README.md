@@ -1,7 +1,16 @@
 OHDSI Evaluation of Population-Level Estimation Methods
 =======================================================
 
-This study aims to evaluate the performance of verious methods in the OHDSI methods library. The study protocol can be found in the *extras* folder.
+<img src="https://img.shields.io/badge/Study%20Status-Complete-orange.svg" alt="Study Status: Complete"> <img src="https://img.shields.io/badge/Study%20Type-Methods%20Research-blue.svg" alt="Study Type: Methods Research">
+
+- Study lead: **Martijn Schuemie**
+- Study start date: **November 1, 2018**
+- Study end date: **August 1, 2019**
+- Protocol: [Word file](https://github.com/ohdsi-studies/MethodsLibraryPleEvaluation/blob/master/extras/OHDSI%20Protocol%20Method%20Evaluation.docx)
+- Publications: **Paper under review**
+
+
+This study aims to evaluate the performance of verious methods in the OHDSI methods library. 
 
 How to run
 ==========
