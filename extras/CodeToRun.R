@@ -50,7 +50,7 @@ outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_ccae"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_ccae"
-outputFolder <- "c:/MethodsLibraryPleEvaluation_ccae"
+outputFolder <- "s:/MethodsLibraryPleEvaluation_ccae"
 exposureDatabaseSchema <- cdmDatabaseSchema
 exposureTable = "drug_era"
 exportFolder <- file.path(outputFolder, "export")

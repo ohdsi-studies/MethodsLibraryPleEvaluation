@@ -177,7 +177,7 @@ showExampleControls <- function(outputFolder, exportFolder) {
         ggplot2::geom_errorbarh(height = 0.15, color = rgb(0, 0, 0.8), alpha = 0.8) +
         ggplot2::geom_point(size = 3, shape = 18, color = rgb(0, 0, 0.8), alpha = 0.8) +
         ggplot2::scale_x_continuous("Estimated effect size",  trans = "log10", breaks = breaks, labels = breaks) +
-        ggplot2::coord_cartesian(xlim = c(0.33, 3)) +
+        ggplot2::coord_cartesian(xlim = c(0.5, 3)) +
         ggplot2::theme(panel.grid.major = ggplot2::element_blank(),
                        panel.grid.minor = ggplot2::element_blank(), panel.background = ggplot2::element_blank(),
                        legend.position = "none", panel.border = ggplot2::element_blank(),
@@ -650,7 +650,7 @@ perStrataMetrics <- function(exportFolder) {
     methods <- data.frame(method = methods,
                           offsetX = ((1:n / (n + 1)) - ((n + 1) / 2) / (n + 1)))
     metrics <- merge(metrics, methods)
-    metrics$x <- metrics$x + metrics$offsetX
+    metrics$x <- metrics$x + metrics$offsetX # + runif(nrow(metrics), -0.2 / (n + 1), 0.2 / (n + 1))
     metrics$stratum <- as.character(metrics$stratum)
     metrics$stratum[metrics$stratum == "Inflammatory Bowel Disease"] <- "IBD"
     metrics$stratum[metrics$stratum == "Acute pancreatitis"] <- "Acute\npancreatitis"
@@ -677,7 +677,7 @@ perStrataMetrics <- function(exportFolder) {
     yLabel <- paste0(metric, if (calibrated == "Calibrated") " after empirical calibration" else "")
     point <- scales::format_format(big.mark = " ", decimal.mark = ".", scientific = FALSE)
     plot <- ggplot2::ggplot(metrics, ggplot2::aes(x = x, y = y, color = method)) +
-        ggplot2::geom_vline(xintercept = 0.5 + 0:(nrow(strataSubset) - 1), linetype = "dashed") +
+        ggplot2::geom_vline(xintercept = 0.5 + 0:nrow(strataSubset), linetype = "dashed") +
         ggplot2::geom_point(size = 2.5, alpha = 0.5, shape = 16) +
         ggplot2::scale_colour_manual(values = fiveColors) +
         ggplot2::scale_x_continuous("Stratum", breaks = strataSubset$x, labels = strataSubset$stratum) +
