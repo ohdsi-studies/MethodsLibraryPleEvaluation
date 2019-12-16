@@ -9,7 +9,7 @@ OHDSI Evaluation of Population-Level Estimation Methods
 - Study lead: **Martijn Schuemie**
 - Study start date: **November 1, 2018**
 - Study end date: **August 1, 2019**
-- Protocol: [Word file](https://github.com/ohdsi-studies/MethodsLibraryPleEvaluation/blob/master/extras/OHDSI%20Protocol%20Method%20Evaluation.docx)
+- Protocol: [**Word file**](https://github.com/ohdsi-studies/MethodsLibraryPleEvaluation/blob/master/extras/OHDSI%20Protocol%20Method%20Evaluation.docx)
 - Publications: **Paper under review**
 - Results explorer: **[MethodEvalViewer](https://data.ohdsi.org/MethodEvalViewer/)**
 
