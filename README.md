@@ -7,17 +7,18 @@ OHDSI Evaluation of Population-Level Estimation Methods
 - Study type: **Methods Research**
 - Tags: **-**
 - Study lead: **Martijn Schuemie**
+- Study lead forums tag: **[schuemie](https://forums.ohdsi.org/u/schuemie)**
 - Study start date: **November 1, 2018**
 - Study end date: **August 1, 2019**
 - Protocol: [**Word file**](https://github.com/ohdsi-studies/MethodsLibraryPleEvaluation/blob/master/extras/OHDSI%20Protocol%20Method%20Evaluation.docx)
 - Publications: **Paper under review**
 - Results explorer: **[MethodEvalViewer](https://data.ohdsi.org/MethodEvalViewer/)**
 
-This study aims to evaluate the performance of verious methods in the OHDSI methods library. 
+This study aims to evaluate the performance of various methods in the OHDSI Methods Library using the OHDSI Methods Benchmark. 
 
 How to run
 ==========
-1. Make sure that you have Java installed. If you don't have Java already intalled on your computed (on most computers it already is installed), go to java.com to get the latest version. (If you have trouble building with rJava below, be sure on Windows that your Path variable includes the path to jvm.dll (Windows Button --> type "path" --> Edit Environmental Variables --> Edit PATH variable, add to end ;C:/Program Files/Java/jre/bin/server) or wherever it is on your system.)
+1. Make sure that you have Java installed. If you don't have Java already installed on your computed (on most computers it already is installed), go to java.com to get the latest version. (If you have trouble building with rJava below, be sure on Windows that your Path variable includes the path to jvm.dll (Windows Button --> type "path" --> Edit Environmental Variables --> Edit PATH variable, add to end ;C:/Program Files/Java/jre/bin/server) or wherever it is on your system.)
 
 2. In R, use the following code to install the study package and its dependencies:
 
@@ -100,7 +101,7 @@ How to run
 
 	* ```cdmDatabaseSchema``` should specify the schema name where your patient-level data in OMOP CDM format resides. Note that for SQL Server, this should include both the database and schema name, for example 'cdm_data.dbo'.
 
-	* ```oracleTempSchema``` should be used in Oracle to specify a schema where the user has write priviliges for storing temporary tables.
+	* ```oracleTempSchema``` should be used in Oracle to specify a schema where the user has write privileges for storing temporary tables.
 
 4. You can view the results using a Shiny app:
 
@@ -109,3 +110,8 @@ How to run
     MethodEvaluation::launchMethodEvaluationApp(exportFolder)
     ```
    
+License
+=======
+
+The OHDSI Evaluation of Population-Level Estimation Methods package is licensed under Apache License 2.0
+
