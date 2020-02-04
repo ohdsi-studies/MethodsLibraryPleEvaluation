@@ -1,7 +1,7 @@
 OHDSI Evaluation of Population-Level Estimation Methods
 =======================================================
 
-<img src="https://img.shields.io/badge/Study%20Status-Results%20Available-yellow.svg" alt="Study Status: Results Available">
+<img src="https://img.shields.io/badge/Study%20Status-Complete-orange.svg" alt="Study Status: Complete">
 
 - Analytics use case(s): **Population-Level Estimation**
 - Study type: **Methods Research**
@@ -11,7 +11,7 @@ OHDSI Evaluation of Population-Level Estimation Methods
 - Study start date: **November 1, 2018**
 - Study end date: **August 1, 2019**
 - Protocol: [**Word file**](https://github.com/ohdsi-studies/MethodsLibraryPleEvaluation/blob/master/extras/OHDSI%20Protocol%20Method%20Evaluation.docx)
-- Publications: **Paper under review**
+- Publications: **[How Confident Are We About Observational Findings in Health Care: A Benchmark Study](https://doi.org/10.1162/99608f92.147cc28e)**
 - Results explorer: **[MethodEvalViewer](https://data.ohdsi.org/MethodEvalViewer/)**
 
 This study aims to evaluate the performance of various methods in the OHDSI Methods Library using the OHDSI Methods Benchmark. 
