@@ -10,6 +10,7 @@ Depends:
     DatabaseConnector (>= 1.2.1)
 Imports:
     Cyclops,
+    BrokenAdaptiveRidge,
     MethodEvaluation,
     FeatureExtraction,
     CohortMethod,

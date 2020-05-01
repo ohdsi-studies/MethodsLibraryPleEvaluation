@@ -112,99 +112,129 @@ createCohortMethodSettings <- function(fileName) {
                                                   fitOutcomeModel = TRUE,
                                                   fitOutcomeModelArgs = fitOutcomeModelArgs1)
 
-    createPsArgs <- CohortMethod::createCreatePsArgs(errorOnHighCorrelation = TRUE,
-                                                     stopOnError = FALSE,
-                                                     maxCohortSizeForFitting = 150000,
-                                                     control = Cyclops::createControl(cvType = "auto",
-                                                                                      startingVariance = 0.01,
-                                                                                      noiseLevel = "quiet",
-                                                                                      tolerance  = 2e-07,
-                                                                                      cvRepetitions = 1))
+    createPsArgsL1 <- CohortMethod::createCreatePsArgs(errorOnHighCorrelation = TRUE,
+                                                       stopOnError = FALSE,
+                                                       maxCohortSizeForFitting = 150000,
+                                                       control = Cyclops::createControl(cvType = "auto",
+                                                                                        startingVariance = 0.01,
+                                                                                        noiseLevel = "quiet",
+                                                                                        tolerance  = 2e-07,
+                                                                                        cvRepetitions = 1))
+
+    createPsArgsBar <- CohortMethod::createCreatePsArgs(errorOnHighCorrelation = TRUE,
+                                                        stopOnError = FALSE,
+                                                        maxCohortSizeForFitting = 150000,
+                                                        control = BrokenAdaptiveRidge::createFastBarPrior(
+                                                            penalty = "bic",
+                                                            initialRidgeVariance = 1,
+                                                            tolerance  = 2e-07))
 
     matchOnPsArgs1 <- CohortMethod::createMatchOnPsArgs(maxRatio = 1)
 
     cmAnalysis2 <- CohortMethod::createCmAnalysis(analysisId = 2,
-                                                  description = "1-on-1 matching, unstratified outcome model",
+                                                  description = "1-on-1 matching L1, unstratified outcome model",
                                                   getDbCohortMethodDataArgs = getDbCmDataArgs,
                                                   createStudyPopArgs = createStudyPopArgs1,
                                                   createPs = TRUE,
-                                                  createPsArgs = createPsArgs,
+                                                  createPsArgs = createPsArgsL1,
                                                   matchOnPs = TRUE,
                                                   matchOnPsArgs = matchOnPsArgs1,
                                                   fitOutcomeModel = TRUE,
                                                   fitOutcomeModelArgs = fitOutcomeModelArgs1)
 
-    matchOnPsArgs2 <- CohortMethod::createMatchOnPsArgs(maxRatio = 100)
+    cmAnalysis3 <- CohortMethod::createCmAnalysis(analysisId = 3,
+                                                  description = "1-on-1 matching BAR, unstratified outcome model",
+                                                  getDbCohortMethodDataArgs = getDbCmDataArgs,
+                                                  createStudyPopArgs = createStudyPopArgs1,
+                                                  createPs = TRUE,
+                                                  createPsArgs = createPsArgsBar,
+                                                  matchOnPs = TRUE,
+                                                  matchOnPsArgs = matchOnPsArgs1,
+                                                  fitOutcomeModel = TRUE,
+                                                  fitOutcomeModelArgs = fitOutcomeModelArgs1)
+#
+#     matchOnPsArgs2 <- CohortMethod::createMatchOnPsArgs(maxRatio = 100)
 
     fitOutcomeModelArgs2 <- CohortMethod::createFitOutcomeModelArgs(useCovariates = FALSE,
                                                                     modelType = "cox",
                                                                     stratified = TRUE)
 
-    cmAnalysis3 <- CohortMethod::createCmAnalysis(analysisId = 3,
-                                                  description = "Variable ratio matching, stratified outcome model",
-                                                  getDbCohortMethodDataArgs = getDbCmDataArgs,
-                                                  createStudyPopArgs = createStudyPopArgs1,
-                                                  createPs = TRUE,
-                                                  createPsArgs = createPsArgs,
-                                                  matchOnPs = TRUE,
-                                                  matchOnPsArgs = matchOnPsArgs2,
-                                                  fitOutcomeModel = TRUE,
-                                                  fitOutcomeModelArgs = fitOutcomeModelArgs2)
+    # cmAnalysis3 <- CohortMethod::createCmAnalysis(analysisId = 3,
+    #                                               description = "Variable ratio matching, stratified outcome model",
+    #                                               getDbCohortMethodDataArgs = getDbCmDataArgs,
+    #                                               createStudyPopArgs = createStudyPopArgs1,
+    #                                               createPs = TRUE,
+    #                                               createPsArgs = createPsArgs,
+    #                                               matchOnPs = TRUE,
+    #                                               matchOnPsArgs = matchOnPsArgs2,
+    #                                               fitOutcomeModel = TRUE,
+    #                                               fitOutcomeModelArgs = fitOutcomeModelArgs2)
 
     stratifyByPsArgs <- CohortMethod::createStratifyByPsArgs(numberOfStrata = 5)
 
 
     cmAnalysis4 <- CohortMethod::createCmAnalysis(analysisId = 4,
-                                                  description = "Stratification",
+                                                  description = "Stratification L1",
                                                   getDbCohortMethodDataArgs = getDbCmDataArgs,
                                                   createStudyPopArgs = createStudyPopArgs1,
                                                   createPs = TRUE,
-                                                  createPsArgs = createPsArgs,
+                                                  createPsArgs = createPsArgsL1,
                                                   stratifyByPs = TRUE,
                                                   stratifyByPsArgs = stratifyByPsArgs,
                                                   fitOutcomeModel = TRUE,
                                                   fitOutcomeModelArgs = fitOutcomeModelArgs2)
 
-    trimByPsArgs <- CohortMethod::createTrimByPsArgs(trimFraction = 0.05)
-
-    fitOutcomeModelArgs3 <- CohortMethod::createFitOutcomeModelArgs(useCovariates = FALSE,
-                                                                    modelType = "cox",
-                                                                    stratified = FALSE,
-                                                                    inversePtWeighting = TRUE)
-
     cmAnalysis5 <- CohortMethod::createCmAnalysis(analysisId = 5,
-                                                  description = "IPTW",
+                                                  description = "Stratification BAR",
                                                   getDbCohortMethodDataArgs = getDbCmDataArgs,
                                                   createStudyPopArgs = createStudyPopArgs1,
                                                   createPs = TRUE,
-                                                  createPsArgs = createPsArgs,
-                                                  trimByPs = TRUE,
-                                                  trimByPsArgs = trimByPsArgs,
+                                                  createPsArgs = createPsArgsBar,
+                                                  stratifyByPs = TRUE,
+                                                  stratifyByPsArgs = stratifyByPsArgs,
                                                   fitOutcomeModel = TRUE,
-                                                  fitOutcomeModelArgs = fitOutcomeModelArgs3)
+                                                  fitOutcomeModelArgs = fitOutcomeModelArgs2)
 
-    fitOutcomeModelArgs4 <- CohortMethod::createFitOutcomeModelArgs(useCovariates = TRUE,
-                                                                    modelType = "cox",
-                                                                    stratified = TRUE,
-                                                                    control = Cyclops::createControl(cvType = "auto",
-                                                                                                     startingVariance = 0.1,
-                                                                                                     selectorType = "byPid",
-                                                                                                     cvRepetitions = 1,
-                                                                                                     tolerance = 2e-07,
-                                                                                                     noiseLevel = "quiet"))
+    # trimByPsArgs <- CohortMethod::createTrimByPsArgs(trimFraction = 0.05)
+    #
+    # fitOutcomeModelArgs3 <- CohortMethod::createFitOutcomeModelArgs(useCovariates = FALSE,
+    #                                                                 modelType = "cox",
+    #                                                                 stratified = FALSE,
+    #                                                                 inversePtWeighting = TRUE)
+    #
+    # cmAnalysis5 <- CohortMethod::createCmAnalysis(analysisId = 5,
+    #                                               description = "IPTW",
+    #                                               getDbCohortMethodDataArgs = getDbCmDataArgs,
+    #                                               createStudyPopArgs = createStudyPopArgs1,
+    #                                               createPs = TRUE,
+    #                                               createPsArgs = createPsArgs,
+    #                                               trimByPs = TRUE,
+    #                                               trimByPsArgs = trimByPsArgs,
+    #                                               fitOutcomeModel = TRUE,
+    #                                               fitOutcomeModelArgs = fitOutcomeModelArgs3)
 
-    cmAnalysis6 <- CohortMethod::createCmAnalysis(analysisId = 6,
-                                                  description = "Var ratio matching + full outcome model",
-                                                  getDbCohortMethodDataArgs = getDbCmDataArgs,
-                                                  createStudyPopArgs = createStudyPopArgs1,
-                                                  createPs = TRUE,
-                                                  createPsArgs = createPsArgs,
-                                                  matchOnPs = TRUE,
-                                                  matchOnPsArgs = matchOnPsArgs2,
-                                                  fitOutcomeModel = TRUE,
-                                                  fitOutcomeModelArgs = fitOutcomeModelArgs4)
+    # fitOutcomeModelArgs4 <- CohortMethod::createFitOutcomeModelArgs(useCovariates = TRUE,
+    #                                                                 modelType = "cox",
+    #                                                                 stratified = TRUE,
+    #                                                                 control = Cyclops::createControl(cvType = "auto",
+    #                                                                                                  startingVariance = 0.1,
+    #                                                                                                  selectorType = "byPid",
+    #                                                                                                  cvRepetitions = 1,
+    #                                                                                                  tolerance = 2e-07,
+    #                                                                                                  noiseLevel = "quiet"))
 
-    cmAnalysisList <- list(cmAnalysis1, cmAnalysis2, cmAnalysis3, cmAnalysis4, cmAnalysis5, cmAnalysis6)
+    # cmAnalysis6 <- CohortMethod::createCmAnalysis(analysisId = 6,
+    #                                               description = "Var ratio matching + full outcome model",
+    #                                               getDbCohortMethodDataArgs = getDbCmDataArgs,
+    #                                               createStudyPopArgs = createStudyPopArgs1,
+    #                                               createPs = TRUE,
+    #                                               createPsArgs = createPsArgs,
+    #                                               matchOnPs = TRUE,
+    #                                               matchOnPsArgs = matchOnPsArgs2,
+    #                                               fitOutcomeModel = TRUE,
+    #                                               fitOutcomeModelArgs = fitOutcomeModelArgs4)
+
+    cmAnalysisList <- list(cmAnalysis1, cmAnalysis2, cmAnalysis3, cmAnalysis4, cmAnalysis5)
     if (!missing(fileName) && !is.null(fileName)) {
         CohortMethod::saveCmAnalysisList(cmAnalysisList, fileName)
     }

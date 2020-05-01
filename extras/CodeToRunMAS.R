@@ -1,4 +1,4 @@
-# Copyright 2018 Observational Health Data Sciences and Informatics
+# Copyright 2020 Observational Health Data Sciences and Informatics
 #
 # This file is part of MethodsLibraryPleEvaluation
 #
@@ -15,14 +15,14 @@
 # limitations under the License.
 
 library(MethodsLibraryPleEvaluation)
-options('fftempdir' = 'c:/fftemp')
+options('fftempdir' = 'd:/fftemp')
 
 dbms <- "pdw"
 user <- NULL
 pw <- NULL
 server <- Sys.getenv("PDW_SERVER")
 port <- Sys.getenv("PDW_PORT")
-maxCores <- 32
+maxCores <- 2
 cdmVersion <- "5"
 oracleTempSchema <- NULL
 connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = dbms,
@@ -50,51 +50,10 @@ outcomeDatabaseSchema <- "scratch.dbo"
 outcomeTable <- "mschuemi_ohdsi_hois_ccae"
 nestingCohortDatabaseSchema <- "scratch.dbo"
 nestingCohortTable <- "mschuemi_ohdsi_nesting_ccae"
-outputFolder <- "s:/MethodsLibraryPleEvaluation_ccae"
+outputFolder <- "d:/Users/msuchard/MethodsLibraryPleEvaluation_ccae"
 exposureDatabaseSchema <- cdmDatabaseSchema
 exposureTable = "drug_era"
 exportFolder <- file.path(outputFolder, "export")
-
-
-# Optum Panther settings ----------------------------------------------------------------
-cdmDatabaseSchema <- "cdm_optum_panther_v776.dbo"
-databaseName <- "PanTher"
-outcomeDatabaseSchema <- "scratch.dbo"
-outcomeTable <- "mschuemi_ohdsi_hois_panther"
-nestingCohortDatabaseSchema <- "scratch.dbo"
-nestingCohortTable <- "mschuemi_ohdsi_nesting_panther"
-outputFolder <- "c:/MethodsLibraryPleEvaluation_panther"
-exposureDatabaseSchema <- "scratch.dbo"
-exposureTable = "mschuemi_ohdsi_exposure_panther"
-exportFolder <- file.path(outputFolder, "export")
-
-
-# MDCR settings --------------------------------------------------------------------------------
-cdmDatabaseSchema <- "cdm_truven_mdcr_v779.dbo"
-databaseName <- "MDCR"
-outcomeDatabaseSchema <- "scratch.dbo"
-outcomeTable <- "mschuemi_ohdsi_hois_mdcr"
-nestingCohortDatabaseSchema <- "scratch.dbo"
-nestingCohortTable <- "mschuemi_ohdsi_nesting_mdcr"
-outputFolder <- "c:/MethodsLibraryPleEvaluation_mdcr"
-exposureDatabaseSchema <- cdmDatabaseSchema
-exposureTable = "drug_era"
-exportFolder <- file.path(outputFolder, "export")
-
-
-# JMDC settings --------------------------------------------------------------------------------
-cdmDatabaseSchema <- "cdm_jmdc_v773.dbo"
-databaseName <- "JMDC"
-outcomeDatabaseSchema <- "scratch.dbo"
-outcomeTable <- "mschuemi_ohdsi_hois_jmdc"
-nestingCohortDatabaseSchema <- "scratch.dbo"
-nestingCohortTable <- "mschuemi_ohdsi_nesting_jmdc"
-outputFolder <- "c:/MethodsLibraryPleEvaluation_jmdc"
-exposureDatabaseSchema <- cdmDatabaseSchema
-exposureTable = "drug_era"
-exportFolder <- file.path(outputFolder, "export")
-
-
 
 execute(connectionDetails = connectionDetails,
         cdmDatabaseSchema = cdmDatabaseSchema,

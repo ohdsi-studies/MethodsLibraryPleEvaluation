@@ -61,129 +61,129 @@ packageResults <- function(outputFolder,
                                                    databaseName = databaseName,
                                                    exportFolder = exportFolder)
 
-    # CaseControl -----------------------------------------------------------------------------------------------
-    estimates <- readRDS(file.path(outputFolder, "ccSummary.rds"))
-
-    estimates <- data.frame(analysisId = estimates$analysisId,
-                            targetId = estimates$exposureId,
-                            outcomeId = estimates$outcomeId,
-                            logRr = estimates$logRr,
-                            seLogRr = estimates$seLogRr,
-                            ci95Lb = estimates$ci95lb,
-                            ci95Ub = estimates$ci95ub)
-
-    ccAnalysisListFile <- system.file("settings", "ccAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
-    ccAnalysisList <- CaseControl::loadCcAnalysisList(ccAnalysisListFile)
-    analysisId <- unlist(ParallelLogger::selectFromList(ccAnalysisList, "analysisId"))
-    description <- unlist(ParallelLogger::selectFromList(ccAnalysisList, "description"))
-    details <- sapply(ccAnalysisList, ParallelLogger::convertSettingsToJson)
-    analysisRef <- data.frame(method = "CaseControl",
-                              analysisId = analysisId,
-                              description = description,
-                              details = details,
-                              comparative = FALSE,
-                              nesting = FALSE,
-                              firstExposureOnly = FALSE)
-    analysisRef$nesting[grepl("nesting", analysisRef$description)] <- TRUE
-
-    MethodEvaluation::packageOhdsiBenchmarkResults(estimates = estimates,
-                                                   controlSummary = controlSummary,
-                                                   analysisRef = analysisRef,
-                                                   databaseName = databaseName,
-                                                   exportFolder = exportFolder)
-
-    # SelfControlledCohort -----------------------------------------------------------------------------------------------
-    estimates <- readRDS(file.path(outputFolder, "sccSummary.rds"))
-
-    estimates <- data.frame(analysisId = estimates$analysisId,
-                            targetId = estimates$exposureId,
-                            outcomeId = estimates$outcomeId,
-                            logRr = estimates$logRr,
-                            seLogRr = estimates$seLogRr,
-                            ci95Lb = estimates$irrLb95,
-                            ci95Ub = estimates$irrUb95)
-
-    sccAnalysisListFile <- system.file("settings", "sccAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
-    sccAnalysisList <- SelfControlledCohort::loadSccAnalysisList(sccAnalysisListFile)
-    analysisId <- unlist(ParallelLogger::selectFromList(sccAnalysisList, "analysisId"))
-    description <- unlist(ParallelLogger::selectFromList(sccAnalysisList, "description"))
-    details <- sapply(sccAnalysisList, ParallelLogger::convertSettingsToJson)
-    analysisRef <- data.frame(method = "SelfControlledCohort",
-                              analysisId = analysisId,
-                              description = description,
-                              details = details,
-                              comparative = FALSE,
-                              nesting = FALSE,
-                              firstExposureOnly = FALSE)
-
-    MethodEvaluation::packageOhdsiBenchmarkResults(estimates = estimates,
-                                                   controlSummary = controlSummary,
-                                                   analysisRef = analysisRef,
-                                                   databaseName = databaseName,
-                                                   exportFolder = exportFolder)
-
-    # CaseCrossover -----------------------------------------------------------------------------------------------
-    estimates <- readRDS(file.path(outputFolder, "ccrSummary.rds"))
-
-    estimates <- data.frame(analysisId = estimates$analysisId,
-                            targetId = estimates$exposureId,
-                            outcomeId = estimates$outcomeId,
-                            logRr = estimates$logRr,
-                            seLogRr = estimates$seLogRr,
-                            ci95Lb = estimates$ci95lb,
-                            ci95Ub = estimates$ci95ub)
-
-    ccrAnalysisListFile <- system.file("settings", "ccrAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
-    ccrAnalysisList <- CaseControl::loadCcAnalysisList(ccrAnalysisListFile)
-    analysisId <- unlist(ParallelLogger::selectFromList(ccrAnalysisList, "analysisId"))
-    description <- unlist(ParallelLogger::selectFromList(ccrAnalysisList, "description"))
-    details <- sapply(ccrAnalysisList, ParallelLogger::convertSettingsToJson)
-    analysisRef <- data.frame(method = "CaseCrossover",
-                              analysisId = analysisId,
-                              description = description,
-                              details = details,
-                              comparative = FALSE,
-                              nesting = FALSE,
-                              firstExposureOnly = FALSE)
-    analysisRef$nesting[grepl("nesting", analysisRef$description)] <- TRUE
-
-    MethodEvaluation::packageOhdsiBenchmarkResults(estimates = estimates,
-                                                   controlSummary = controlSummary,
-                                                   analysisRef = analysisRef,
-                                                   databaseName = databaseName,
-                                                   exportFolder = exportFolder)
-
-
-    # SelfControlledCaseSeries -----------------------------------------------------------------------------------------------
-    estimates <- readRDS(file.path(outputFolder, "sccsSummary.rds"))
-
-    estimates <- data.frame(analysisId = estimates$analysisId,
-                            targetId = estimates$exposureId,
-                            outcomeId = estimates$outcomeId,
-                            logRr = estimates$`logRr(Exposure of interest)`,
-                            seLogRr = estimates$`seLogRr(Exposure of interest)`,
-                            ci95Lb = estimates$`ci95lb(Exposure of interest)`,
-                            ci95Ub = estimates$`ci95ub(Exposure of interest)`)
-
-    sccsAnalysisListFile <- system.file("settings", "sccsAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
-    sccsAnalysisList <- SelfControlledCaseSeries::loadSccsAnalysisList(sccsAnalysisListFile)
-    analysisId <- unlist(ParallelLogger::selectFromList(sccsAnalysisList, "analysisId"))
-    description <- unlist(ParallelLogger::selectFromList(sccsAnalysisList, "description"))
-    details <- sapply(sccsAnalysisList, ParallelLogger::convertSettingsToJson)
-    analysisRef <- data.frame(method = "SelfControlledCaseSeries",
-                              analysisId = analysisId,
-                              description = description,
-                              details = details,
-                              comparative = FALSE,
-                              nesting = FALSE,
-                              firstExposureOnly = FALSE)
-
-    MethodEvaluation::packageOhdsiBenchmarkResults(estimates = estimates,
-                                                   controlSummary = controlSummary,
-                                                   analysisRef = analysisRef,
-                                                   databaseName = databaseName,
-                                                   exportFolder = exportFolder)
-
+    # # CaseControl -----------------------------------------------------------------------------------------------
+    # estimates <- readRDS(file.path(outputFolder, "ccSummary.rds"))
+    #
+    # estimates <- data.frame(analysisId = estimates$analysisId,
+    #                         targetId = estimates$exposureId,
+    #                         outcomeId = estimates$outcomeId,
+    #                         logRr = estimates$logRr,
+    #                         seLogRr = estimates$seLogRr,
+    #                         ci95Lb = estimates$ci95lb,
+    #                         ci95Ub = estimates$ci95ub)
+    #
+    # ccAnalysisListFile <- system.file("settings", "ccAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
+    # ccAnalysisList <- CaseControl::loadCcAnalysisList(ccAnalysisListFile)
+    # analysisId <- unlist(ParallelLogger::selectFromList(ccAnalysisList, "analysisId"))
+    # description <- unlist(ParallelLogger::selectFromList(ccAnalysisList, "description"))
+    # details <- sapply(ccAnalysisList, ParallelLogger::convertSettingsToJson)
+    # analysisRef <- data.frame(method = "CaseControl",
+    #                           analysisId = analysisId,
+    #                           description = description,
+    #                           details = details,
+    #                           comparative = FALSE,
+    #                           nesting = FALSE,
+    #                           firstExposureOnly = FALSE)
+    # analysisRef$nesting[grepl("nesting", analysisRef$description)] <- TRUE
+    #
+    # MethodEvaluation::packageOhdsiBenchmarkResults(estimates = estimates,
+    #                                                controlSummary = controlSummary,
+    #                                                analysisRef = analysisRef,
+    #                                                databaseName = databaseName,
+    #                                                exportFolder = exportFolder)
+    #
+    # # SelfControlledCohort -----------------------------------------------------------------------------------------------
+    # estimates <- readRDS(file.path(outputFolder, "sccSummary.rds"))
+    #
+    # estimates <- data.frame(analysisId = estimates$analysisId,
+    #                         targetId = estimates$exposureId,
+    #                         outcomeId = estimates$outcomeId,
+    #                         logRr = estimates$logRr,
+    #                         seLogRr = estimates$seLogRr,
+    #                         ci95Lb = estimates$irrLb95,
+    #                         ci95Ub = estimates$irrUb95)
+    #
+    # sccAnalysisListFile <- system.file("settings", "sccAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
+    # sccAnalysisList <- SelfControlledCohort::loadSccAnalysisList(sccAnalysisListFile)
+    # analysisId <- unlist(ParallelLogger::selectFromList(sccAnalysisList, "analysisId"))
+    # description <- unlist(ParallelLogger::selectFromList(sccAnalysisList, "description"))
+    # details <- sapply(sccAnalysisList, ParallelLogger::convertSettingsToJson)
+    # analysisRef <- data.frame(method = "SelfControlledCohort",
+    #                           analysisId = analysisId,
+    #                           description = description,
+    #                           details = details,
+    #                           comparative = FALSE,
+    #                           nesting = FALSE,
+    #                           firstExposureOnly = FALSE)
+    #
+    # MethodEvaluation::packageOhdsiBenchmarkResults(estimates = estimates,
+    #                                                controlSummary = controlSummary,
+    #                                                analysisRef = analysisRef,
+    #                                                databaseName = databaseName,
+    #                                                exportFolder = exportFolder)
+    #
+    # # CaseCrossover -----------------------------------------------------------------------------------------------
+    # estimates <- readRDS(file.path(outputFolder, "ccrSummary.rds"))
+    #
+    # estimates <- data.frame(analysisId = estimates$analysisId,
+    #                         targetId = estimates$exposureId,
+    #                         outcomeId = estimates$outcomeId,
+    #                         logRr = estimates$logRr,
+    #                         seLogRr = estimates$seLogRr,
+    #                         ci95Lb = estimates$ci95lb,
+    #                         ci95Ub = estimates$ci95ub)
+    #
+    # ccrAnalysisListFile <- system.file("settings", "ccrAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
+    # ccrAnalysisList <- CaseControl::loadCcAnalysisList(ccrAnalysisListFile)
+    # analysisId <- unlist(ParallelLogger::selectFromList(ccrAnalysisList, "analysisId"))
+    # description <- unlist(ParallelLogger::selectFromList(ccrAnalysisList, "description"))
+    # details <- sapply(ccrAnalysisList, ParallelLogger::convertSettingsToJson)
+    # analysisRef <- data.frame(method = "CaseCrossover",
+    #                           analysisId = analysisId,
+    #                           description = description,
+    #                           details = details,
+    #                           comparative = FALSE,
+    #                           nesting = FALSE,
+    #                           firstExposureOnly = FALSE)
+    # analysisRef$nesting[grepl("nesting", analysisRef$description)] <- TRUE
+    #
+    # MethodEvaluation::packageOhdsiBenchmarkResults(estimates = estimates,
+    #                                                controlSummary = controlSummary,
+    #                                                analysisRef = analysisRef,
+    #                                                databaseName = databaseName,
+    #                                                exportFolder = exportFolder)
+    #
+    #
+    # # SelfControlledCaseSeries -----------------------------------------------------------------------------------------------
+    # estimates <- readRDS(file.path(outputFolder, "sccsSummary.rds"))
+    #
+    # estimates <- data.frame(analysisId = estimates$analysisId,
+    #                         targetId = estimates$exposureId,
+    #                         outcomeId = estimates$outcomeId,
+    #                         logRr = estimates$`logRr(Exposure of interest)`,
+    #                         seLogRr = estimates$`seLogRr(Exposure of interest)`,
+    #                         ci95Lb = estimates$`ci95lb(Exposure of interest)`,
+    #                         ci95Ub = estimates$`ci95ub(Exposure of interest)`)
+    #
+    # sccsAnalysisListFile <- system.file("settings", "sccsAnalysisSettings.txt", package = "MethodsLibraryPleEvaluation")
+    # sccsAnalysisList <- SelfControlledCaseSeries::loadSccsAnalysisList(sccsAnalysisListFile)
+    # analysisId <- unlist(ParallelLogger::selectFromList(sccsAnalysisList, "analysisId"))
+    # description <- unlist(ParallelLogger::selectFromList(sccsAnalysisList, "description"))
+    # details <- sapply(sccsAnalysisList, ParallelLogger::convertSettingsToJson)
+    # analysisRef <- data.frame(method = "SelfControlledCaseSeries",
+    #                           analysisId = analysisId,
+    #                           description = description,
+    #                           details = details,
+    #                           comparative = FALSE,
+    #                           nesting = FALSE,
+    #                           firstExposureOnly = FALSE)
+    #
+    # MethodEvaluation::packageOhdsiBenchmarkResults(estimates = estimates,
+    #                                                controlSummary = controlSummary,
+    #                                                analysisRef = analysisRef,
+    #                                                databaseName = databaseName,
+    #                                                exportFolder = exportFolder)
+    #
 
 }
 
